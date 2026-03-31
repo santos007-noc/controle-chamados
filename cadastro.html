@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Cadastro de Usuário</title>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial;
+      background: linear-gradient(135deg, #1e3c72, #2a5298);
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .box {
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      width: 300px;
+      text-align: center;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+    }
+
+    input {
+      width: 100%;
+      padding: 10px;
+      margin: 8px 0;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .cadastrar {
+      background: #2a5298;
+      color: white;
+    }
+
+    .voltar {
+      background: #eee;
+    }
+  </style>
+</head>
+<body>
+
+<div class="box">
+  <h2>Cadastrar Usuário</h2>
+
+  <input type="text" placeholder="Novo usuário">
+  <input type="password" placeholder="Senha">
+  <input type="password" placeholder="Confirmar senha">
+
+  <button class="cadastrar" onclick="cadastrar()">Cadastrar</button>
+  <button class="voltar" onclick="voltar()">Voltar</button>
+</div>
+
+<script>
+function cadastrar() {
+  alert("Usuário cadastrado com sucesso!");
+}
+
+function voltar() {
+  window.history.back();
+}
+
+</script>
+
+</body>
+</html>
