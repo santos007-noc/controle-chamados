@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <title>Login - Controle de Chamados</title>
+  <title>Sistema de Controle de Chamados</title>
 
   <style>
     body {
@@ -22,6 +22,10 @@
       width: 300px;
       text-align: center;
       box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+    }
+
+    h2 {
+      margin-bottom: 20px;
     }
 
     input {
@@ -46,32 +50,42 @@
       color: white;
     }
 
+    .login:hover {
+      background: #1e3c72;
+    }
+
     .cadastro {
       background: #eee;
     }
+
+    .cadastro:hover {
+      background: #ddd;
+    }
   </style>
 </head>
+
 <body>
 
-<div class="box">
-  <h2>Controle de Chamados</h2>
+  <div class="box">
+    <h2>Controle de Chamados</h2>
 
-  <input type="text" placeholder="Usuário">
-  <input type="password" placeholder="Senha">
+    <input type="text" placeholder="Usuário">
+    <input type="password" placeholder="Senha">
 
-  <button class="login" onclick="login()">Entrar</button>
-  <button class="cadastro" onclick="irCadastro()">Cadastrar Usuário</button>
-</div>
+    <button class="login" onclick="login()">Entrar</button>
+    <button class="cadastro" onclick="irCadastro()">Cadastrar Usuário</button>
+  </div>
 
-<script>
-function login() {
-  alert("Login realizado");
-}
+  <script>
+    function login() {
+      alert("Login realizado");
+      window.location.href = "chamados.html";
+    }
 
-function irCadastro() {
-  window.location.href = "cadastro.html";
-}
-</script>
+    function irCadastro() {
+      window.location.href = "cadastro.html";
+    }
+  </script>
 
 </body>
 </html>
