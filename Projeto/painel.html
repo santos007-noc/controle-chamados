@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Painel - Controle de Chamados</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f4f6fb;
+    }
+
+    header {
+      background: linear-gradient(135deg, #1e3c72, #2a5298);
+      color: white;
+      padding: 20px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 24px;
+    }
+
+    .logout {
+      background: white;
+      color: #1e3c72;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .logout:hover {
+      background: #eaeaea;
+    }
+
+    .container {
+      padding: 30px;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    }
+
+    .card h3 {
+      margin: 0 0 10px;
+      color: #333;
+      font-size: 18px;
+    }
+
+    .card p {
+      margin: 0;
+      font-size: 28px;
+      font-weight: bold;
+      color: #2a5298;
+    }
+
+    .topo-tabela {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .topo-tabela h2 {
+      margin: 0;
+      color: #333;
+    }
+
+    .novo {
+      background: #2a5298;
+      color: white;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .novo:hover {
+      background: #1e3c72;
+    }
+
+    .tabela-box {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 700px;
+    }
+
+    th, td {
+      text-align: left;
+      padding: 12px;
+      border-bottom: 1px solid #ddd;
+    }
+
+    th {
+      background: #f0f3fa;
+      color: #333;
+    }
+
+    .status {
+      padding: 6px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: bold;
+      display: inline-block;
+    }
+
+    .aberto {
+      background: #fff3cd;
+      color: #856404;
+    }
+
+    .andamento {
+      background: #cce5ff;
+      color: #004085;
+    }
+
+    .concluido {
+      background: #d4edda;
+      color: #155724;
+    }
+
+    .acoes button {
+      margin-right: 6px;
+      padding: 6px 10px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .editar {
+      background: #ffc107;
+      color: #000;
+    }
+
+    .excluir {
+      background: #dc3545;
+      color: white;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.45);
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .modal-conteudo {
+      background: white;
+      width: 100%;
+      max-width: 420px;
+      border-radius: 12px;
+      padding: 25px;
+    }
+
+    .modal-conteudo h2 {
+      margin-top: 0;
+    }
+
+    .modal-conteudo input,
+    .modal-conteudo select,
+    .modal-conteudo textarea {
+      width: 100%;
+      padding: 10px;
+      margin: 8px 0 14px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-family: Arial, sans-serif;
+    }
+
+    .botoes-modal {
+      display: flex;
+      gap: 10px;
+    }
+
+    .botoes-modal button {
+      flex: 1;
+      padding: 10px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .salvar {
+      background: #2a5298;
+      color: white;
+    }
+
+    .cancelar {
+      background: #ddd;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Controle de Chamados</h1>
+    <button class="logout" onclick="sair()">Sair</button>
+  </header>
+
+  <div class="container">
+    <div class="cards">
+      <div class="card">
+        <h3>Total de Chamados</h3>
+        <p id="totalChamados">0</p>
+      </div>
+
+      <div class="card">
+        <h3>Abertos</h3>
+        <p id="abertos">0</p>
+      </div>
+
+      <div class="card">
+        <h3>Em Andamento</h3>
+        <p id="andamento">0</p>
+      </div>
+
+      <div class="card">
+        <h3>Concluídos</h3>
+        <p id="concluidos">0</p>
+      </div>
+    </div>
+
+    <div class="topo-tabela">
+      <h2>Lista de Chamados</h2>
+      <button class="novo" onclick="abrirModal()">+ Novo Chamado</button>
+    </div>
+
+    <div class="tabela-box">
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Título</th>
+            <th>Morador</th>
+            <th>Local</th>
+            <th>Status</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody id="tabelaChamados"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="modal" id="modalChamado">
+    <div class="modal-conteudo">
+      <h2 id="tituloModal">Novo Chamado</h2>
+
+      <input type="text" id="titulo" placeholder="Título do chamado">
+      <input type="text" id="morador" placeholder="Nome do morador">
+      <input type="text" id="local" placeholder="Local do problema">
+
+      <select id="status">
+        <option value="Aberto">Aberto</option>
+        <option value="Em andamento">Em andamento</option>
+        <option value="Concluído">Concluído</option>
+      </select>
+
+      <textarea id="descricao" rows="4" placeholder="Descrição do chamado"></textarea>
+
+      <div class="botoes-modal">
+        <button class="salvar" onclick="salvarChamado()">Salvar</button>
+        <button class="cancelar" onclick="fecharModal()">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const API_URL = 'http://localhost:3000';
+    let idEditando = null;
+
+    function sair() {
+      window.location.href = 'index.html';
+    }
+
+    function abrirModal() {
+      idEditando = null;
+      document.getElementById('tituloModal').innerText = 'Novo Chamado';
+      limparCampos();
+      document.getElementById('modalChamado').style.display = 'flex';
+    }
+
+    function fecharModal() {
+      document.getElementById('modalChamado').style.display = 'none';
+    }
+
+    function limparCampos() {
+      document.getElementById('titulo').value = '';
+      document.getElementById('morador').value = '';
+      document.getElementById('local').value = '';
+      document.getElementById('status').value = 'Aberto';
+      document.getElementById('descricao').value = '';
+    }
+
+    function classeStatus(status) {
+      if (status === 'Aberto') return 'aberto';
+      if (status === 'Em andamento') return 'andamento';
+      if (status === 'Concluído') return 'concluido';
+      return '';
+    }
+
+    function carregarChamados() {
+      fetch(`${API_URL}/chamados`)
+        .then(response => response.json())
+        .then(data => {
+          const tabela = document.getElementById('tabelaChamados');
+          tabela.innerHTML = '';
+
+          data.forEach(chamado => {
+            tabela.innerHTML += `
+              <tr>
+                <td>${chamado.chamado_id}</td>
+                <td>${chamado.titulo}</td>
+                <td>${chamado.morador}</td>
+                <td>${chamado.local_chamado}</td>
+                <td><span class="status ${classeStatus(chamado.status_chamado)}">${chamado.status_chamado}</span></td>
+                <td class="acoes">
+                  <button class="editar" onclick='editarChamado(${JSON.stringify(chamado)})'>Editar</button>
+                  <button class="excluir" onclick="excluirChamado(${chamado.chamado_id})">Excluir</button>
+                </td>
+              </tr>
+            `;
+          });
+
+          atualizarResumo(data);
+        })
+        .catch(error => {
+          console.error('Erro ao carregar chamados:', error);
+          alert('Erro ao carregar chamados');
+        });
+    }
+
+    function atualizarResumo(chamados) {
+      let total = chamados.length;
+      let abertos = 0;
+      let andamento = 0;
+      let concluidos = 0;
+
+      chamados.forEach(chamado => {
+        if (chamado.status_chamado === 'Aberto') abertos++;
+        if (chamado.status_chamado === 'Em andamento') andamento++;
+        if (chamado.status_chamado === 'Concluído') concluidos++;
+      });
+
+      document.getElementById('totalChamados').textContent = total;
+      document.getElementById('abertos').textContent = abertos;
+      document.getElementById('andamento').textContent = andamento;
+      document.getElementById('concluidos').textContent = concluidos;
+    }
+
+    function salvarChamado() {
+      const titulo = document.getElementById('titulo').value;
+      const morador = document.getElementById('morador').value;
+      const local = document.getElementById('local').value;
+      const status = document.getElementById('status').value;
+      const descricao = document.getElementById('descricao').value;
+
+      if (!titulo || !morador || !local) {
+        alert('Preencha os campos obrigatórios.');
+        return;
+      }
+
+      const dados = {
+        titulo: titulo,
+        morador: morador,
+        local_chamado: local,
+        status_chamado: status,
+        descricao: descricao
+      };
+
+      if (idEditando) {
+        fetch(`${API_URL}/chamados/${idEditando}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(dados)
+        })
+        .then(response => response.json())
+        .then(data => {
+          fecharModal();
+          carregarChamados();
+        })
+        .catch(error => {
+          console.error('Erro ao atualizar chamado:', error);
+          alert('Erro ao atualizar chamado');
+        });
+      } else {
+        fetch(`${API_URL}/chamados`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(dados)
+        })
+        .then(response => response.json())
+        .then(data => {
+          fecharModal();
+          carregarChamados();
+        })
+        .catch(error => {
+          console.error('Erro ao cadastrar chamado:', error);
+          alert('Erro ao cadastrar chamado');
+        });
+      }
+    }
+
+    function editarChamado(chamado) {
+      idEditando = chamado.chamado_id;
+      document.getElementById('tituloModal').innerText = 'Editar Chamado';
+      document.getElementById('titulo').value = chamado.titulo;
+      document.getElementById('morador').value = chamado.morador;
+      document.getElementById('local').value = chamado.local_chamado;
+      document.getElementById('status').value = chamado.status_chamado;
+      document.getElementById('descricao').value = chamado.descricao || '';
+      document.getElementById('modalChamado').style.display = 'flex';
+    }
+
+    function excluirChamado(id) {
+      const confirmar = confirm('Deseja excluir este chamado?');
+      if (!confirmar) return;
+
+      fetch(`${API_URL}/chamados/${id}`, {
+        method: 'DELETE'
+      })
+      .then(response => response.json())
+      .then(data => {
+        carregarChamados();
+      })
+      .catch(error => {
+        console.error('Erro ao excluir chamado:', error);
+        alert('Erro ao excluir chamado');
+      });
+    }
+
+    carregarChamados();
+  </script>
+
+</body>
+</html>

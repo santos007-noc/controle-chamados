@@ -30,6 +30,7 @@
       margin: 8px 0;
       border-radius: 5px;
       border: 1px solid #ccc;
+      box-sizing: border-box;
     }
 
     button {
@@ -49,6 +50,12 @@
     .voltar {
       background: #eee;
     }
+
+    .mensagem {
+      margin-top: 10px;
+      font-size: 14px;
+      color: red;
+    }
   </style>
 </head>
 <body>
@@ -56,23 +63,56 @@
 <div class="box">
   <h2>Cadastrar Usuário</h2>
 
-  <input type="text" placeholder="Novo usuário">
-  <input type="password" placeholder="Senha">
-  <input type="password" placeholder="Confirmar senha">
+  <input type="text" id="login" placeholder="Usuário">
+  <input type="password" id="senha" placeholder="Senha">
+  <input type="password" id="confirmar" placeholder="Confirmar senha">
 
   <button class="cadastrar" onclick="cadastrar()">Cadastrar</button>
   <button class="voltar" onclick="voltar()">Voltar</button>
+
+  <div id="mensagem" class="mensagem"></div>
 </div>
 
 <script>
 function cadastrar() {
-  alert("Usuário cadastrado com sucesso!");
+  const login = document.getElementById('login').value;
+  const senha = document.getElementById('senha').value;
+  const confirmar = document.getElementById('confirmar').value;
+  const mensagem = document.getElementById('mensagem');
+
+  if (senha !== confirmar) {
+    mensagem.innerText = "As senhas não coincidem";
+    return;
+  }
+
+  fetch('http://localhost:3000/usuarios', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      nome: login,
+      email: login + '@email.com'
+    })
+  })
+  .then(response => response.json())
+  .then(data => {
+    mensagem.style.color = 'green';
+    mensagem.innerText = "Usuário cadastrado com sucesso!";
+
+    setTimeout(() => {
+      window.location.href = "index.html";
+    }, 1000);
+  })
+  .catch(error => {
+    console.error(error);
+    mensagem.innerText = "Erro ao cadastrar usuário";
+  });
 }
 
 function voltar() {
-  window.history.back();
+  window.location.href = "index.html";
 }
-
 </script>
 
 </body>
