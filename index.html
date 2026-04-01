@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <title>tela de login </title>
+  <title>Tela de Login</title>
 
   <style>
     body {
@@ -34,6 +34,7 @@
       margin: 8px 0;
       border-radius: 5px;
       border: 1px solid #ccc;
+      box-sizing: border-box;
     }
 
     button {
@@ -61,27 +62,62 @@
     .cadastro:hover {
       background: #ddd;
     }
+
+    .mensagem {
+      margin-top: 15px;
+      font-size: 14px;
+      color: red;
+    }
   </style>
 </head>
 
 <body>
 
   <div class="box">
-    <h2>controle-chamados</h2>
+    <h2>Controle de Chamados</h2>
 
-    <input type="text" placeholder="Usuário">
-    <input type="password" placeholder="Senha">
+    <input type="text" id="login" placeholder="Usuário">
+    <input type="password" id="senha" placeholder="Senha">
 
     <button class="login" onclick="login()">Entrar</button>
     <button class="cadastro" onclick="irCadastro()">Cadastrar Usuário</button>
+
+    <div class="mensagem" id="mensagem"></div>
   </div>
 
   <script>
     function login() {
-      alert("Login realizado");
-      
+      const loginDigitado = document.getElementById('login').value;
+      const senhaDigitada = document.getElementById('senha').value;
+      const mensagem = document.getElementById('mensagem');
+
+      fetch('http://localhost:3000/usuarios')
+        .then(response => response.json())
+        .then(data => {
+          const usuarioEncontrado = data.find(usuario =>
+            usuario.login === loginDigitado &&
+            usuario.senha === senhaDigitada
+          );
+
+          if (usuarioEncontrado) {
+            mensagem.style.color = 'green';
+            mensagem.innerText = 'Login realizado com sucesso!';
+
+            setTimeout(() => {
+              window.location.href = 'painel.html';
+            }, 1000);
+          } else {
+            mensagem.style.color = 'red';
+            mensagem.innerText = 'Usuário ou senha inválidos';
+          }
+        })
+        .catch(error => {
+          console.error('Erro:', error);
+          mensagem.style.color = 'red';
+          mensagem.innerText = 'Erro ao conectar com o servidor';
+        });
     }
-    
+
     function irCadastro() {
       window.location.href = "cadastro.html";
     }
