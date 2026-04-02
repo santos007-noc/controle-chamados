@@ -87,9 +87,16 @@
 
   <script>
     function login() {
-      const loginDigitado = document.getElementById('login').value;
-      const senhaDigitada = document.getElementById('senha').value;
+      const loginDigitado = document.getElementById('login').value.trim();
+      const senhaDigitada = document.getElementById('senha').value.trim();
       const mensagem = document.getElementById('mensagem');
+
+      mensagem.innerText = '';
+
+      if (!loginDigitado || !senhaDigitada) {
+        mensagem.innerText = 'Preencha usuário e senha';
+        return;
+      }
 
       fetch('http://localhost:3000/usuarios')
         .then(response => response.json())
@@ -102,6 +109,10 @@
           if (usuarioEncontrado) {
             mensagem.style.color = 'green';
             mensagem.innerText = 'Login realizado com sucesso!';
+
+            // limpa campos
+            document.getElementById('login').value = '';
+            document.getElementById('senha').value = '';
 
             setTimeout(() => {
               window.location.href = 'painel.html';
