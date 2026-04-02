@@ -101,34 +101,41 @@
         return;
       }
 
-      fetch(`${API_URL}/usuarios`)
-        .then(response => response.json())
-        .then(data => {
-          const usuarioEncontrado = data.find(usuario =>
-            usuario.login === loginDigitado &&
-            usuario.senha === senhaDigitada
-          );
-
-          if (usuarioEncontrado) {
-            mensagem.style.color = 'green';
-            mensagem.innerText = 'Login realizado com sucesso!';
-
-            document.getElementById('login').value = '';
-            document.getElementById('senha').value = '';
-
-            setTimeout(() => {
-              window.location.href = 'painel.html';
-            }, 1000);
-          } else {
-            mensagem.style.color = 'red';
-            mensagem.innerText = 'Usuário ou senha inválidos';
-          }
+      fetch(`${API_URL}/login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          login: loginDigitado,
+          senha: senhaDigitada
         })
-        .catch(error => {
-          console.error('Erro:', error);
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.erro) {
           mensagem.style.color = 'red';
-          mensagem.innerText = 'Erro ao conectar com o servidor';
-        });
+          mensagem.innerText = data.erro;
+          return;
+        }
+
+        localStorage.setItem('usuarioLogado', JSON.stringify(data.usuario));
+
+        mensagem.style.color = 'green';
+        mensagem.innerText = 'Login realizado com sucesso!';
+
+        document.getElementById('login').value = '';
+        document.getElementById('senha').value = '';
+
+        setTimeout(() => {
+          window.location.href = 'painel.html';
+        }, 1000);
+      })
+      .catch(error => {
+        console.error('Erro:', error);
+        mensagem.style.color = 'red';
+        mensagem.innerText = 'Erro ao conectar com o servidor';
+      });
     }
 
     function irCadastro() {

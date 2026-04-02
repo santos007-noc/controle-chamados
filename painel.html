@@ -22,11 +22,18 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
+      gap: 15px;
+      flex-wrap: wrap;
     }
 
     header h1 {
       margin: 0;
       font-size: 24px;
+    }
+
+    .usuario-info {
+      font-size: 14px;
+      opacity: 0.95;
     }
 
     .logout {
@@ -226,7 +233,10 @@
 <body>
 
   <header>
-    <h1>Controle de Chamados</h1>
+    <div>
+      <h1>Controle de Chamados</h1>
+      <div class="usuario-info" id="usuarioInfo"></div>
+    </div>
     <button class="logout" onclick="sair()">Sair</button>
   </header>
 
@@ -255,7 +265,7 @@
 
     <div class="topo-tabela">
       <h2>Lista de Chamados</h2>
-      <button class="novo" onclick="abrirModal()">+ Novo Chamado</button>
+      <button class="novo" id="btnNovoChamado" onclick="abrirModal()">+ Novo Chamado</button>
     </div>
 
     <div class="tabela-box">
@@ -300,9 +310,18 @@
 
   <script>
     const API_URL = 'https://backend-chamados-production.up.railway.app';
+    const usuarioLogado = JSON.parse(localStorage.getItem('usuarioLogado'));
     let idEditando = null;
 
+    if (!usuarioLogado) {
+      window.location.href = 'index.html';
+    }
+
+    document.getElementById('usuarioInfo').innerText =
+      `Usuário: ${usuarioLogado.nome} | Tipo: ${usuarioLogado.tipo_usuario}`;
+
     function sair() {
+      localStorage.removeItem('usuarioLogado');
       window.location.href = 'index.html';
     }
 
@@ -310,6 +329,11 @@
       idEditando = null;
       document.getElementById('tituloModal').innerText = 'Novo Chamado';
       limparCampos();
+
+      if (usuarioLogado.tipo_usuario === 'cliente') {
+        document.getElementById('morador').value = usuarioLogado.nome;
+      }
+
       document.getElementById('modalChamado').style.display = 'flex';
     }
 
@@ -339,7 +363,24 @@
           const tabela = document.getElementById('tabelaChamados');
           tabela.innerHTML = '';
 
-          data.forEach(chamado => {
+          let chamadosFiltrados = data;
+
+          if (usuarioLogado.tipo_usuario === 'cliente') {
+            chamadosFiltrados = data.filter(chamado => chamado.morador === usuarioLogado.nome);
+          }
+
+          chamadosFiltrados.forEach(chamado => {
+            let botoesAcoes = '';
+
+            if (usuarioLogado.tipo_usuario === 'admin') {
+              botoesAcoes = `
+                <button class="editar" onclick='editarChamado(${JSON.stringify(chamado)})'>Editar</button>
+                <button class="excluir" onclick="excluirChamado(${chamado.chamado_id})">Excluir</button>
+              `;
+            } else {
+              botoesAcoes = `<span>Somente visualização</span>`;
+            }
+
             tabela.innerHTML += `
               <tr>
                 <td>${chamado.chamado_id}</td>
@@ -347,15 +388,12 @@
                 <td>${chamado.morador}</td>
                 <td>${chamado.local_chamado}</td>
                 <td><span class="status ${classeStatus(chamado.status_chamado)}">${chamado.status_chamado}</span></td>
-                <td class="acoes">
-                  <button class="editar" onclick='editarChamado(${JSON.stringify(chamado)})'>Editar</button>
-                  <button class="excluir" onclick="excluirChamado(${chamado.chamado_id})">Excluir</button>
-                </td>
+                <td class="acoes">${botoesAcoes}</td>
               </tr>
             `;
           });
 
-          atualizarResumo(data);
+          atualizarResumo(chamadosFiltrados);
         })
         .catch(error => {
           console.error('Erro ao carregar chamados:', error);
@@ -439,6 +477,11 @@
     }
 
     function editarChamado(chamado) {
+      if (usuarioLogado.tipo_usuario !== 'admin') {
+        alert('Somente administrador pode editar chamados.');
+        return;
+      }
+
       idEditando = chamado.chamado_id;
       document.getElementById('tituloModal').innerText = 'Editar Chamado';
       document.getElementById('titulo').value = chamado.titulo;
@@ -450,6 +493,11 @@
     }
 
     function excluirChamado(id) {
+      if (usuarioLogado.tipo_usuario !== 'admin') {
+        alert('Somente administrador pode excluir chamados.');
+        return;
+      }
+
       const confirmar = confirm('Deseja excluir este chamado?');
       if (!confirmar) return;
 
