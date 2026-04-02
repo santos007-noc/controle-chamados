@@ -87,6 +87,8 @@
   </div>
 
   <script>
+    const API_URL = 'https://backend-chamados-production.up.railway.app';
+
     function cadastrar() {
       const nome = document.getElementById('nome').value.trim();
       const login = document.getElementById('login').value.trim();
@@ -108,7 +110,7 @@
         return;
       }
 
-      fetch('http://localhost:3000/usuarios', {
+      fetch(`${API_URL}/usuarios`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

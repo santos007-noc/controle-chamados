@@ -86,6 +86,8 @@
   </div>
 
   <script>
+    const API_URL = 'https://backend-chamados-production.up.railway.app';
+
     function login() {
       const loginDigitado = document.getElementById('login').value.trim();
       const senhaDigitada = document.getElementById('senha').value.trim();
@@ -98,7 +100,7 @@
         return;
       }
 
-      fetch('http://localhost:3000/usuarios')
+      fetch(`${API_URL}/usuarios`)
         .then(response => response.json())
         .then(data => {
           const usuarioEncontrado = data.find(usuario =>
@@ -110,7 +112,6 @@
             mensagem.style.color = 'green';
             mensagem.innerText = 'Login realizado com sucesso!';
 
-            // limpa campos
             document.getElementById('login').value = '';
             document.getElementById('senha').value = '';
 
