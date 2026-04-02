@@ -96,6 +96,7 @@
       mensagem.innerText = '';
 
       if (!loginDigitado || !senhaDigitada) {
+        mensagem.style.color = 'red';
         mensagem.innerText = 'Preencha usuário e senha';
         return;
       }
@@ -131,7 +132,7 @@
     }
 
     function irCadastro() {
-      window.location.href = "cadastro.html";
+      window.location.href = 'cadastro.html';
     }
   </script>
 
