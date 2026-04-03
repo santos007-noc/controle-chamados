@@ -14,6 +14,7 @@ header{
   padding:20px;
   display:flex;
   justify-content:space-between;
+  align-items:center;
 }
 
 .container{padding:20px;}
@@ -70,6 +71,7 @@ input,select{
   border-radius:8px;
   color:white;
   font-weight:bold;
+  z-index:9999;
 }
 
 .success{background:#16a34a;}
@@ -89,7 +91,7 @@ input,select{
 <div class="top">
   <button class="btn btn-success" onclick="novo()">+ Novo</button>
 
-  <input id="busca" placeholder="Buscar...">
+  <input id="busca" placeholder="Buscar..." oninput="render()">
 
   <select id="filtro" onchange="render()">
     <option value="">Todos</option>
@@ -104,139 +106,208 @@ input,select{
 </div>
 
 <script>
+const API = "https://backend-chamados-production.up.railway.app";
+let chamados = [];
 
-const API="https://backend-chamados-production.up.railway.app";
+// tenta ler a chave nova e a antiga
+let usuario = null;
 
-let usuario=JSON.parse(localStorage.getItem("usuario"));
-let chamados=[];
+try {
+  usuario =
+    JSON.parse(localStorage.getItem("usuario")) ||
+    JSON.parse(localStorage.getItem("usuarioLogado"));
+} catch (e) {
+  console.error("Erro ao ler localStorage:", e);
+}
 
-if(!usuario) location.href="index.html";
+// depuração
+console.log("Usuário lido do localStorage:", usuario);
+
+if (!usuario) {
+  alert("Usuário não encontrado no localStorage.");
+  window.location.href = "index.html";
+}
+
+// normaliza os nomes dos campos
+if (usuario) {
+  usuario.usuario_id =
+    usuario.usuario_id ?? usuario.id ?? usuario.id_usuario ?? usuario.usuarioId;
+
+  usuario.tipo_usuario =
+    usuario.tipo_usuario ?? usuario.tipo ?? usuario.perfil ?? usuario.tipoUser;
+}
+
+console.log("Usuário normalizado:", usuario);
+
+if (!usuario.usuario_id || !usuario.tipo_usuario) {
+  alert("Os dados do usuário estão incompletos: " + JSON.stringify(usuario));
+}
 
 // ================= TOAST =================
-function toast(msg,type="success"){
-  const t=document.createElement("div");
-  t.className="toast "+type;
-  t.innerText=msg;
+function toast(msg, type = "success") {
+  const t = document.createElement("div");
+  t.className = "toast " + type;
+  t.innerText = msg;
   document.body.appendChild(t);
-  setTimeout(()=>t.remove(),3000);
+  setTimeout(() => t.remove(), 3000);
 }
 
 // ================= LOAD =================
-async function carregar(){
-  const res=await fetch(`${API}/chamados?usuario_id=${usuario.usuario_id}&tipo_usuario=${usuario.tipo_usuario}`);
-  chamados=await res.json();
-  render();
+async function carregar() {
+  try {
+    const url = `${API}/chamados?usuario_id=${usuario.usuario_id}&tipo_usuario=${encodeURIComponent(usuario.tipo_usuario)}`;
+    console.log("Buscando chamados em:", url);
+
+    const res = await fetch(url);
+    const texto = await res.text();
+
+    try {
+      chamados = JSON.parse(texto);
+    } catch {
+      console.error("Resposta não é JSON:", texto);
+      toast("Erro ao carregar chamados", "error");
+      return;
+    }
+
+    if (!Array.isArray(chamados)) {
+      console.error("Resposta inesperada:", chamados);
+      chamados = [];
+    }
+
+    render();
+  } catch (error) {
+    console.error("Erro ao carregar:", error);
+    toast("Erro ao conectar com o servidor", "error");
+  }
 }
 
 // ================= RENDER =================
-function render(){
-  const lista=document.getElementById("lista");
-  const busca=document.getElementById("busca").value.toLowerCase();
-  const filtro=document.getElementById("filtro").value;
+function render() {
+  const lista = document.getElementById("lista");
+  const busca = document.getElementById("busca").value.toLowerCase();
+  const filtro = document.getElementById("filtro").value;
 
-  lista.innerHTML="";
+  lista.innerHTML = "";
 
   chamados
-  .filter(c=>c.titulo.toLowerCase().includes(busca))
-  .filter(c=>!filtro || c.status_chamado===filtro)
-  .forEach(c=>{
+    .filter(c => (c.titulo || "").toLowerCase().includes(busca))
+    .filter(c => !filtro || c.status_chamado === filtro)
+    .forEach(c => {
+      const podeEditar = usuario.tipo_usuario === "admin" && c.status_chamado === "Aberto";
 
-    const podeEditar=usuario.tipo_usuario==="admin" && c.status_chamado==="Aberto";
+      lista.innerHTML += `
+        <div class="card">
+          <h3>${c.titulo || ""}</h3>
+          <p>${c.descricao || ""}</p>
+          <p><b>Morador:</b> ${c.morador || ""}</p>
+          <p><b>Local:</b> ${c.local_chamado || ""}</p>
 
-    lista.innerHTML+=`
-    <div class="card">
-      <h3>${c.titulo}</h3>
-      <p>${c.descricao || ""}</p>
-      <p><b>Morador:</b> ${c.morador}</p>
-      <p><b>Local:</b> ${c.local_chamado}</p>
+          <span class="status ${String(c.status_chamado || "").replace(" ","").toLowerCase()}">${c.status_chamado || ""}</span>
 
-      <span class="status ${c.status_chamado.replace(" ","").toLowerCase()}">${c.status_chamado}</span>
+          ${podeEditar ? `
+          <div style="margin-top:10px;">
+            <button class="btn btn-warning" onclick="editar(${c.chamado_id})">Editar</button>
+            <button class="btn btn-danger" onclick="excluir(${c.chamado_id})">Excluir</button>
+          </div>` : ""}
+        </div>
+      `;
+    });
 
-      ${podeEditar?`
-      <div style="margin-top:10px;">
-        <button class="btn btn-warning" onclick="editar(${c.chamado_id})">Editar</button>
-        <button class="btn btn-danger" onclick="excluir(${c.chamado_id})">Excluir</button>
-      </div>`:""}
-    </div>
-    `;
-  });
+  if (chamados.length === 0) {
+    lista.innerHTML = `<div class="card"><p>Nenhum chamado encontrado.</p></div>`;
+  }
 }
 
 // ================= NOVO =================
-async function novo(){
-  const titulo=prompt("Título:");
-  const morador=prompt("Morador:");
-  const local=prompt("Local:");
-  const descricao=prompt("Descrição:");
+async function novo() {
+  const titulo = prompt("Título:");
+  const morador = prompt("Morador:");
+  const local = prompt("Local:");
+  const descricao = prompt("Descrição:");
 
-  if(!titulo||!morador||!local){
-    toast("Preencha os campos","error");
+  if (!titulo || !morador || !local) {
+    toast("Preencha os campos", "error");
     return;
   }
 
-  await fetch(`${API}/chamados`,{
-    method:"POST",
-    headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({
-      titulo,
-      morador,
-      local_chamado:local,
-      status_chamado:"Aberto",
-      descricao,
-      usuario_id:usuario.usuario_id
-    })
-  });
+  try {
+    await fetch(`${API}/chamados`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        titulo,
+        morador,
+        local_chamado: local,
+        status_chamado: "Aberto",
+        descricao,
+        usuario_id: usuario.usuario_id
+      })
+    });
 
-  toast("Chamado criado");
-  carregar();
+    toast("Chamado criado");
+    carregar();
+  } catch (error) {
+    console.error(error);
+    toast("Erro ao criar chamado", "error");
+  }
 }
 
 // ================= EDITAR =================
-async function editar(id){
-  const titulo=prompt("Novo título:");
-  const status=prompt("Status: Aberto / Em andamento / Fechado");
+async function editar(id) {
+  const titulo = prompt("Novo título:");
+  const status = prompt("Status: Aberto / Em andamento / Fechado");
 
-  await fetch(`${API}/chamados/${id}`,{
-    method:"PUT",
-    headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({
-      titulo,
-      morador:"-",
-      local_chamado:"-",
-      status_chamado:status,
-      descricao:"",
-      tipo_usuario:usuario.tipo_usuario
-    })
-  });
+  try {
+    await fetch(`${API}/chamados/${id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        titulo,
+        morador: "-",
+        local_chamado: "-",
+        status_chamado: status,
+        descricao: "",
+        tipo_usuario: usuario.tipo_usuario
+      })
+    });
 
-  toast("Atualizado");
-  carregar();
+    toast("Atualizado");
+    carregar();
+  } catch (error) {
+    console.error(error);
+    toast("Erro ao atualizar", "error");
+  }
 }
 
 // ================= DELETE =================
-async function excluir(id){
-  if(!confirm("Excluir?")) return;
+async function excluir(id) {
+  if (!confirm("Excluir?")) return;
 
-  await fetch(`${API}/chamados/${id}`,{
-    method:"DELETE",
-    headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({
-      tipo_usuario:usuario.tipo_usuario
-    })
-  });
+  try {
+    await fetch(`${API}/chamados/${id}`, {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        tipo_usuario: usuario.tipo_usuario
+      })
+    });
 
-  toast("Excluído");
-  carregar();
+    toast("Excluído");
+    carregar();
+  } catch (error) {
+    console.error(error);
+    toast("Erro ao excluir", "error");
+  }
 }
 
 // ================= LOGOUT =================
-function logout(){
-  localStorage.clear();
-  location.href="index.html";
+function logout() {
+  localStorage.removeItem("usuario");
+  localStorage.removeItem("usuarioLogado");
+  window.location.href = "index.html";
 }
 
 carregar();
-
 </script>
 
 </body>
