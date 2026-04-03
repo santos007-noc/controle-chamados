@@ -1,157 +1,111 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <title>Cadastro de Usuário</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cadastro</title>
 
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial;
-      background: linear-gradient(135deg, #1e3c72, #2a5298);
-      height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
+<style>
+body{
+  margin:0;
+  font-family:"Segoe UI";
+  background:linear-gradient(135deg,#1e3a8a,#2563eb);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  height:100vh;
+}
 
-    .box {
-      background: white;
-      padding: 30px;
-      border-radius: 10px;
-      width: 320px;
-      text-align: center;
-      box-shadow: 0 5px 20px rgba(0,0,0,0.3);
-    }
+.box{
+  background:white;
+  padding:40px;
+  border-radius:20px;
+  width:350px;
+  box-shadow:0 20px 50px rgba(0,0,0,0.2);
+  text-align:center;
+}
 
-    h2 {
-      margin-bottom: 20px;
-    }
+h2{margin-bottom:20px;}
 
-    input {
-      width: 100%;
-      padding: 10px;
-      margin: 8px 0;
-      border-radius: 5px;
-      border: 1px solid #ccc;
-      box-sizing: border-box;
-    }
+input,select{
+  width:100%;
+  padding:12px;
+  margin:10px 0;
+  border-radius:10px;
+  border:1px solid #ccc;
+}
 
-    button {
-      width: 100%;
-      padding: 10px;
-      margin-top: 10px;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
+button{
+  width:100%;
+  padding:12px;
+  margin-top:10px;
+  border:none;
+  border-radius:10px;
+  cursor:pointer;
+  font-weight:bold;
+}
 
-    .cadastrar {
-      background: #2a5298;
-      color: white;
-    }
+.salvar{background:#16a34a;color:white;}
+.voltar{background:#eee;}
 
-    .cadastrar:hover {
-      background: #1e3c72;
-    }
-
-    .voltar {
-      background: #eee;
-    }
-
-    .voltar:hover {
-      background: #ddd;
-    }
-
-    .mensagem {
-      margin-top: 10px;
-      font-size: 14px;
-      color: red;
-    }
-  </style>
+.msg{margin-top:10px;font-size:14px;}
+</style>
 </head>
+
 <body>
 
-  <div class="box">
-    <h2>Cadastrar Usuário</h2>
+<div class="box">
+<h2>Cadastrar Usuário</h2>
 
-    <input type="text" id="nome" placeholder="Nome completo">
-    <input type="text" id="login" placeholder="Login">
-    <input type="password" id="senha" placeholder="Senha">
-    <input type="password" id="confirmar" placeholder="Confirmar senha">
+<input id="login" placeholder="Usuário">
+<input id="senha" type="password" placeholder="Senha">
 
-    <button class="cadastrar" onclick="cadastrar()">Cadastrar</button>
-    <button class="voltar" onclick="voltar()">Voltar</button>
+<select id="tipo">
+  <option value="cliente">Cliente</option>
+  <option value="admin">Administrador</option>
+</select>
 
-    <div id="mensagem" class="mensagem"></div>
-  </div>
+<button class="salvar" onclick="cadastrar()">Cadastrar</button>
+<button class="voltar" onclick="voltar()">Voltar</button>
 
-  <script>
-    const API_URL = 'https://backend-chamados-production.up.railway.app';
+<div id="msg" class="msg"></div>
+</div>
 
-    function cadastrar() {
-      const nome = document.getElementById('nome').value.trim();
-      const login = document.getElementById('login').value.trim();
-      const senha = document.getElementById('senha').value.trim();
-      const confirmar = document.getElementById('confirmar').value.trim();
-      const mensagem = document.getElementById('mensagem');
+<script>
+const API="https://backend-chamados-production.up.railway.app";
 
-      mensagem.innerText = '';
+function cadastrar(){
+  const login=document.getElementById("login").value.trim();
+  const senha=document.getElementById("senha").value.trim();
+  const tipo=document.getElementById("tipo").value;
+  const msg=document.getElementById("msg");
 
-      if (!nome || !login || !senha || !confirmar) {
-        mensagem.style.color = 'red';
-        mensagem.innerText = 'Preencha todos os campos';
-        return;
-      }
+  if(!login||!senha){
+    msg.innerText="Preencha todos os campos";
+    msg.style.color="red";
+    return;
+  }
 
-      if (senha !== confirmar) {
-        mensagem.style.color = 'red';
-        mensagem.innerText = 'As senhas não coincidem';
-        return;
-      }
+  fetch(`${API}/usuarios`,{
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({login,senha,tipo_usuario:tipo})
+  })
+  .then(r=>r.json())
+  .then(data=>{
+    msg.innerText="Usuário cadastrado!";
+    msg.style.color="green";
+  })
+  .catch(()=>{
+    msg.innerText="Erro ao cadastrar";
+    msg.style.color="red";
+  });
+}
 
-      fetch(`${API_URL}/usuarios`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          nome: nome,
-          login: login,
-          senha: senha
-        })
-      })
-      .then(response => response.json())
-      .then(data => {
-        if (data.erro) {
-          mensagem.style.color = 'red';
-          mensagem.innerText = data.erro;
-          return;
-        }
-
-        mensagem.style.color = 'green';
-        mensagem.innerText = 'Usuário cadastrado com sucesso!';
-
-        document.getElementById('nome').value = '';
-        document.getElementById('login').value = '';
-        document.getElementById('senha').value = '';
-        document.getElementById('confirmar').value = '';
-
-        setTimeout(() => {
-          window.location.href = 'index.html';
-        }, 1000);
-      })
-      .catch(error => {
-        console.error('Erro:', error);
-        mensagem.style.color = 'red';
-        mensagem.innerText = 'Erro ao cadastrar usuário';
-      });
-    }
-
-    function voltar() {
-      window.location.href = 'index.html';
-    }
-  </script>
+function voltar(){
+  location.href="index.html";
+}
+</script>
 
 </body>
 </html>
