@@ -86,25 +86,25 @@
   </div>
 
   <script>
-    const API_URL = 'https://backend-chamados-production.up.railway.app';
+    const API_URL = "https://backend-chamados-production.up.railway.app";
 
     function login() {
-      const loginDigitado = document.getElementById('login').value.trim();
-      const senhaDigitada = document.getElementById('senha').value.trim();
-      const mensagem = document.getElementById('mensagem');
+      const loginDigitado = document.getElementById("login").value.trim();
+      const senhaDigitada = document.getElementById("senha").value.trim();
+      const mensagem = document.getElementById("mensagem");
 
-      mensagem.innerText = '';
+      mensagem.innerText = "";
 
       if (!loginDigitado || !senhaDigitada) {
-        mensagem.style.color = 'red';
-        mensagem.innerText = 'Preencha usuário e senha';
+        mensagem.style.color = "red";
+        mensagem.innerText = "Preencha usuário e senha";
         return;
       }
 
       fetch(`${API_URL}/login`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json'
+          "Content-Type": "application/json"
         },
         body: JSON.stringify({
           login: loginDigitado,
@@ -114,32 +114,34 @@
       .then(response => response.json())
       .then(data => {
         if (data.erro) {
-          mensagem.style.color = 'red';
+          mensagem.style.color = "red";
           mensagem.innerText = data.erro;
           return;
         }
 
-        localStorage.setItem('usuarioLogado', JSON.stringify(data.usuario));
+        const usuario = data.usuario || data;
 
-        mensagem.style.color = 'green';
-        mensagem.innerText = 'Login realizado com sucesso!';
+        localStorage.setItem("usuario", JSON.stringify(usuario));
 
-        document.getElementById('login').value = '';
-        document.getElementById('senha').value = '';
+        mensagem.style.color = "green";
+        mensagem.innerText = "Login realizado com sucesso!";
+
+        document.getElementById("login").value = "";
+        document.getElementById("senha").value = "";
 
         setTimeout(() => {
-          window.location.href = 'painel.html';
-        }, 1000);
+          window.location.href = "painel.html";
+        }, 800);
       })
       .catch(error => {
-        console.error('Erro:', error);
-        mensagem.style.color = 'red';
-        mensagem.innerText = 'Erro ao conectar com o servidor';
+        console.error("Erro:", error);
+        mensagem.style.color = "red";
+        mensagem.innerText = "Erro ao conectar com o servidor";
       });
     }
 
     function irCadastro() {
-      window.location.href = 'cadastro.html';
+      window.location.href = "cadastro.html";
     }
   </script>
 
