@@ -14,10 +14,22 @@ header{
   padding:20px;
   display:flex;
   justify-content:space-between;
-  align-items:center;
 }
 
 .container{padding:20px;}
+
+.top{
+  margin-bottom:20px;
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+}
+
+input,select{
+  padding:10px;
+  border-radius:6px;
+  border:1px solid #ccc;
+}
 
 .btn{
   padding:10px 15px;
@@ -27,9 +39,9 @@ header{
 }
 
 .btn-primary{background:#2563eb;color:white;}
-.btn-danger{background:#dc2626;color:white;}
-.btn-warning{background:#f59e0b;color:white;}
 .btn-success{background:#16a34a;color:white;}
+.btn-warning{background:#f59e0b;color:white;}
+.btn-danger{background:#dc2626;color:white;}
 
 .card{
   background:white;
@@ -47,12 +59,8 @@ header{
 }
 
 .aberto{background:#dbeafe;color:#1e40af;}
-.andamento{background:#fef3c7;color:#92400e;}
+.emandamento{background:#fef3c7;color:#92400e;}
 .fechado{background:#dcfce7;color:#166534;}
-
-.actions{
-  margin-top:10px;
-}
 
 .toast{
   position:fixed;
@@ -62,16 +70,10 @@ header{
   border-radius:8px;
   color:white;
   font-weight:bold;
-  animation:fade 3s forwards;
 }
 
 .success{background:#16a34a;}
 .error{background:#dc2626;}
-
-@keyframes fade{
-  0%{opacity:1}
-  100%{opacity:0}
-}
 </style>
 </head>
 
@@ -84,56 +86,49 @@ header{
 
 <div class="container">
 
-  <div style="margin-bottom:15px;">
-    <button class="btn btn-success" onclick="abrirNovo()">+ Novo Chamado</button>
-    <input id="busca" placeholder="Buscar..." style="padding:8px;margin-left:10px;">
-    <select id="filtro" onchange="render()">
-      <option value="">Todos</option>
-      <option value="Aberto">Aberto</option>
-      <option value="Em andamento">Em andamento</option>
-      <option value="Fechado">Fechado</option>
-    </select>
-  </div>
+<div class="top">
+  <button class="btn btn-success" onclick="novo()">+ Novo</button>
 
-  <div id="lista"></div>
+  <input id="busca" placeholder="Buscar...">
+
+  <select id="filtro" onchange="render()">
+    <option value="">Todos</option>
+    <option value="Aberto">Aberto</option>
+    <option value="Em andamento">Em andamento</option>
+    <option value="Fechado">Fechado</option>
+  </select>
+</div>
+
+<div id="lista"></div>
+
 </div>
 
 <script>
 
-const API_URL = "https://backend-chamados-production.up.railway.app";
+const API="https://backend-chamados-production.up.railway.app";
 
-let chamados = [];
-let usuario = JSON.parse(localStorage.getItem("usuario"));
-let token = localStorage.getItem("token");
+let usuario=JSON.parse(localStorage.getItem("usuario"));
+let chamados=[];
 
-if(!usuario){
-  window.location.href = "index.html";
-}
+if(!usuario) location.href="index.html";
 
 // ================= TOAST =================
 function toast(msg,type="success"){
   const t=document.createElement("div");
-  t.className=`toast ${type}`;
+  t.className="toast "+type;
   t.innerText=msg;
   document.body.appendChild(t);
   setTimeout(()=>t.remove(),3000);
 }
 
-// ================= LOGOUT =================
-function logout(){
-  localStorage.clear();
-  window.location.href="index.html";
-}
-
 // ================= LOAD =================
 async function carregar(){
-  const res = await fetch(`${API_URL}/chamados`,{
-    headers:{Authorization:`Bearer ${token}`}
-  });
-  chamados = await res.json();
+  const res=await fetch(`${API}/chamados?usuario_id=${usuario.usuario_id}&tipo_usuario=${usuario.tipo_usuario}`);
+  chamados=await res.json();
   render();
 }
 
+// ================= RENDER =================
 function render(){
   const lista=document.getElementById("lista");
   const busca=document.getElementById("busca").value.toLowerCase();
@@ -143,79 +138,103 @@ function render(){
 
   chamados
   .filter(c=>c.titulo.toLowerCase().includes(busca))
-  .filter(c=>!filtro || c.status===filtro)
+  .filter(c=>!filtro || c.status_chamado===filtro)
   .forEach(c=>{
 
-    let podeEditar = usuario.tipo_usuario==="admin" && c.status==="Aberto";
+    const podeEditar=usuario.tipo_usuario==="admin" && c.status_chamado==="Aberto";
 
     lista.innerHTML+=`
     <div class="card">
       <h3>${c.titulo}</h3>
-      <p>${c.descricao}</p>
-      <span class="status ${c.status.toLowerCase().replace(" ","")}">${c.status}</span>
+      <p>${c.descricao || ""}</p>
+      <p><b>Morador:</b> ${c.morador}</p>
+      <p><b>Local:</b> ${c.local_chamado}</p>
 
-      ${podeEditar ? `
-      <div class="actions">
-        <button class="btn btn-warning" onclick="editar(${c.id})">Editar</button>
-        <button class="btn btn-danger" onclick="excluir(${c.id})">Excluir</button>
-      </div>
-      ` : ""}
+      <span class="status ${c.status_chamado.replace(" ","").toLowerCase()}">${c.status_chamado}</span>
 
+      ${podeEditar?`
+      <div style="margin-top:10px;">
+        <button class="btn btn-warning" onclick="editar(${c.chamado_id})">Editar</button>
+        <button class="btn btn-danger" onclick="excluir(${c.chamado_id})">Excluir</button>
+      </div>`:""}
     </div>
     `;
   });
 }
 
-// ================= CRUD =================
-async function abrirNovo(){
+// ================= NOVO =================
+async function novo(){
   const titulo=prompt("Título:");
+  const morador=prompt("Morador:");
+  const local=prompt("Local:");
   const descricao=prompt("Descrição:");
 
-  if(!titulo||!descricao) return;
+  if(!titulo||!morador||!local){
+    toast("Preencha os campos","error");
+    return;
+  }
 
-  await fetch(`${API_URL}/chamados`,{
+  await fetch(`${API}/chamados`,{
     method:"POST",
-    headers:{
-      "Content-Type":"application/json",
-      Authorization:`Bearer ${token}`
-    },
-    body:JSON.stringify({titulo,descricao})
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({
+      titulo,
+      morador,
+      local_chamado:local,
+      status_chamado:"Aberto",
+      descricao,
+      usuario_id:usuario.usuario_id
+    })
   });
 
   toast("Chamado criado");
   carregar();
 }
 
+// ================= EDITAR =================
 async function editar(id){
   const titulo=prompt("Novo título:");
-  const descricao=prompt("Nova descrição:");
+  const status=prompt("Status: Aberto / Em andamento / Fechado");
 
-  await fetch(`${API_URL}/chamados/${id}`,{
+  await fetch(`${API}/chamados/${id}`,{
     method:"PUT",
-    headers:{
-      "Content-Type":"application/json",
-      Authorization:`Bearer ${token}`
-    },
-    body:JSON.stringify({titulo,descricao})
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({
+      titulo,
+      morador:"-",
+      local_chamado:"-",
+      status_chamado:status,
+      descricao:"",
+      tipo_usuario:usuario.tipo_usuario
+    })
   });
 
   toast("Atualizado");
   carregar();
 }
 
+// ================= DELETE =================
 async function excluir(id){
   if(!confirm("Excluir?")) return;
 
-  await fetch(`${API_URL}/chamados/${id}`,{
+  await fetch(`${API}/chamados/${id}`,{
     method:"DELETE",
-    headers:{Authorization:`Bearer ${token}`}
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({
+      tipo_usuario:usuario.tipo_usuario
+    })
   });
 
   toast("Excluído");
   carregar();
 }
 
-// ================= INIT =================
+// ================= LOGOUT =================
+function logout(){
+  localStorage.clear();
+  location.href="index.html";
+}
+
 carregar();
 
 </script>
