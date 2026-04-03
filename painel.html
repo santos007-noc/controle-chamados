@@ -6,51 +6,372 @@
 <title>Painel de Chamados</title>
 
 <style>
-/* (mesmo CSS que você já tinha — não alterei nada visual) */
-body{font-family:"Segoe UI";margin:0;background:#eef2f7;}
-header{background:#1e3a8a;color:white;padding:20px;display:flex;justify-content:space-between;}
-.container{padding:20px;}
-.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:15px;}
-
-.card{
-  background:white;
-  padding:20px;
-  border-radius:12px;
-  box-shadow:0 5px 15px rgba(0,0,0,0.1);
+:root{
+  --azul-escuro:#1e3a8a;
+  --azul:#2563eb;
+  --azul-claro:#dbeafe;
+  --verde:#16a34a;
+  --verde-claro:#dcfce7;
+  --amarelo:#f59e0b;
+  --amarelo-claro:#fef3c7;
+  --vermelho:#dc2626;
+  --cinza-fundo:#eef2f7;
+  --cinza-borda:#dbe2ea;
+  --cinza-texto:#475569;
+  --branco:#ffffff;
+  --sombra:0 10px 25px rgba(15, 23, 42, 0.08);
+  --radius:16px;
 }
 
-.btn{padding:8px 12px;border:none;border-radius:6px;cursor:pointer;font-weight:bold;}
-.btn-warning{background:#f59e0b;color:white;}
-.btn-danger{background:#dc2626;color:white;}
-.btn-success{background:#16a34a;color:white;}
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:"Segoe UI", Arial, sans-serif;
+}
 
-.status{padding:5px 10px;border-radius:20px;font-size:12px;font-weight:bold;}
-.aberto{background:#dbeafe;color:#1e40af;}
-.emandamento{background:#fef3c7;color:#92400e;}
-.fechado{background:#dcfce7;color:#166534;}
+body{
+  background:linear-gradient(180deg, #eaf1fb 0%, #eef2f7 100%);
+  color:#0f172a;
+  min-height:100vh;
+}
 
-.modal{
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,0.5);
-  display:none;
-  justify-content:center;
+header{
+  background:linear-gradient(135deg, var(--azul-escuro), #1d4ed8);
+  color:var(--branco);
+  padding:22px 28px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:16px;
+  box-shadow:var(--sombra);
+}
+
+.header-left h1{
+  font-size:34px;
+  margin-bottom:6px;
+}
+
+.header-left p{
+  font-size:14px;
+  opacity:0.9;
+}
+
+.header-right{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  flex-wrap:wrap;
+}
+
+.user-badge{
+  background:rgba(255,255,255,0.15);
+  border:1px solid rgba(255,255,255,0.2);
+  padding:10px 14px;
+  border-radius:999px;
+  font-size:14px;
+  backdrop-filter:blur(8px);
+}
+
+.container{
+  max-width:1200px;
+  margin:28px auto;
+  padding:0 20px 30px;
+}
+
+.stats{
+  display:grid;
+  grid-template-columns:repeat(4, 1fr);
+  gap:14px;
+  margin-bottom:18px;
+}
+
+.stat-box{
+  background:var(--branco);
+  border-radius:var(--radius);
+  padding:18px;
+  box-shadow:var(--sombra);
+  border:1px solid var(--cinza-borda);
+}
+
+.stat-box h3{
+  font-size:13px;
+  color:var(--cinza-texto);
+  margin-bottom:8px;
+  font-weight:600;
+}
+
+.stat-box p{
+  font-size:28px;
+  font-weight:700;
+}
+
+.controls-box{
+  background:rgba(255,255,255,0.9);
+  border:1px solid var(--cinza-borda);
+  border-radius:var(--radius);
+  box-shadow:var(--sombra);
+  padding:16px;
+  margin-bottom:20px;
+}
+
+.controls{
+  display:flex;
+  gap:12px;
+  flex-wrap:wrap;
   align-items:center;
 }
 
-.modal.show{display:flex;}
-
-.modal-content{
-  background:white;
-  padding:20px;
+input, select{
+  height:48px;
+  border:1px solid var(--cinza-borda);
   border-radius:12px;
-  width:300px;
+  padding:0 14px;
+  font-size:15px;
+  background:var(--branco);
+  outline:none;
+  transition:0.2s;
 }
 
-input,select,textarea{
+input:focus, select:focus{
+  border-color:var(--azul);
+  box-shadow:0 0 0 4px rgba(37,99,235,0.12);
+}
+
+#busca{
+  min-width:260px;
+  flex:1;
+}
+
+#filtro{
+  min-width:180px;
+}
+
+.btn{
+  height:48px;
+  padding:0 18px;
+  border:none;
+  border-radius:12px;
+  cursor:pointer;
+  font-weight:600;
+  transition:0.2s;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+}
+
+.btn:hover{
+  transform:translateY(-1px);
+}
+
+.btn-success{
+  background:var(--verde);
+  color:white;
+}
+
+.btn-success:hover{
+  background:#15803d;
+}
+
+.btn-warning{
+  background:var(--amarelo);
+  color:white;
+}
+
+.btn-warning:hover{
+  background:#d97706;
+}
+
+.btn-danger{
+  background:var(--vermelho);
+  color:white;
+}
+
+.btn-danger:hover{
+  background:#b91c1c;
+}
+
+.btn-outline{
+  background:rgba(255,255,255,0.16);
+  color:white;
+  border:1px solid rgba(255,255,255,0.25);
+}
+
+.btn-outline:hover{
+  background:rgba(255,255,255,0.24);
+}
+
+.grid-chamados{
+  display:grid;
+  grid-template-columns:repeat(auto-fit, minmax(300px, 1fr));
+  gap:18px;
+}
+
+.card{
+  background:var(--branco);
+  border:1px solid var(--cinza-borda);
+  border-radius:20px;
+  box-shadow:var(--sombra);
+  padding:20px;
+  position:relative;
+  overflow:hidden;
+}
+
+.card::before{
+  content:"";
+  position:absolute;
+  top:0;
+  left:0;
   width:100%;
-  padding:8px;
-  margin:5px 0;
+  height:5px;
+  background:linear-gradient(90deg, var(--azul), #60a5fa);
+}
+
+.card h3{
+  font-size:23px;
+  margin-bottom:10px;
+  color:#0f172a;
+}
+
+.desc{
+  color:var(--cinza-texto);
+  margin-bottom:16px;
+  line-height:1.5;
+  min-height:48px;
+}
+
+.info{
+  display:grid;
+  gap:8px;
+  margin-bottom:16px;
+}
+
+.info p{
+  color:#0f172a;
+  font-size:15px;
+}
+
+.info span{
+  color:var(--cinza-texto);
+  font-weight:500;
+}
+
+.footer-card{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:12px;
+  margin-top:8px;
+}
+
+.acoes{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+}
+
+.status{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  padding:8px 14px;
+  border-radius:999px;
+  font-size:13px;
+  font-weight:700;
+}
+
+.aberto{
+  background:var(--azul-claro);
+  color:#1d4ed8;
+}
+
+.emandamento{
+  background:var(--amarelo-claro);
+  color:#a16207;
+}
+
+.fechado{
+  background:var(--verde-claro);
+  color:#15803d;
+}
+
+.concluído,
+.concluido{
+  background:var(--verde-claro);
+  color:#15803d;
+}
+
+.empty{
+  background:var(--branco);
+  border:1px dashed #cbd5e1;
+  border-radius:20px;
+  box-shadow:var(--sombra);
+  padding:50px 20px;
+  text-align:center;
+  color:var(--cinza-texto);
+}
+
+.empty h3{
+  color:#0f172a;
+  margin-bottom:8px;
+  font-size:24px;
+}
+
+.toast{
+  position:fixed;
+  top:20px;
+  right:20px;
+  padding:14px 18px;
+  border-radius:12px;
+  color:white;
+  font-weight:700;
+  box-shadow:var(--sombra);
+  z-index:9999;
+  animation:fadeIn .25s ease;
+}
+
+.success{background:var(--verde);}
+.error{background:var(--vermelho);}
+
+@keyframes fadeIn{
+  from{opacity:0; transform:translateY(-10px);}
+  to{opacity:1; transform:translateY(0);}
+}
+
+@media (max-width:900px){
+  .stats{
+    grid-template-columns:repeat(2, 1fr);
+  }
+
+  .header-left h1{
+    font-size:28px;
+  }
+}
+
+@media (max-width:600px){
+  .stats{
+    grid-template-columns:1fr;
+  }
+
+  .controls{
+    flex-direction:column;
+    align-items:stretch;
+  }
+
+  #busca, #filtro, .btn{
+    width:100%;
+  }
+
+  header{
+    padding:20px;
+  }
+
+  .header-left h1{
+    font-size:24px;
+  }
 }
 </style>
 </head>
@@ -58,167 +379,283 @@ input,select,textarea{
 <body>
 
 <header>
-  <h2>Painel de Chamados</h2>
-  <button class="btn btn-danger" onclick="logout()">Sair</button>
+  <div class="header-left">
+    <h1>Painel de Chamados</h1>
+    <p>Acompanhe, filtre e gerencie os chamados do sistema</p>
+  </div>
+
+  <div class="header-right">
+    <div class="user-badge" id="usuarioInfo">Usuário</div>
+    <button class="btn btn-outline" onclick="logout()">Sair</button>
+  </div>
 </header>
 
 <div class="container">
 
-<button class="btn btn-success" onclick="abrirModalNovo()">+ Novo</button>
-
-<div id="lista" class="cards"></div>
-
-</div>
-
-<!-- MODAL -->
-<div class="modal" id="modal">
-  <div class="modal-content">
-    <h3 id="tituloModal">Novo Chamado</h3>
-
-    <input id="titulo">
-    <input id="morador">
-    <input id="local">
-
-    <select id="status">
-      <option>Aberto</option>
-      <option>Em andamento</option>
-      <option>Fechado</option>
-    </select>
-
-    <textarea id="descricao"></textarea>
-
-    <button class="btn btn-success" onclick="salvar()">Salvar</button>
-    <button onclick="fecharModal()">Cancelar</button>
+  <div class="stats">
+    <div class="stat-box">
+      <h3>Total de Chamados</h3>
+      <p id="statTotal">0</p>
+    </div>
+    <div class="stat-box">
+      <h3>Em Aberto</h3>
+      <p id="statAberto">0</p>
+    </div>
+    <div class="stat-box">
+      <h3>Em Andamento</h3>
+      <p id="statAndamento">0</p>
+    </div>
+    <div class="stat-box">
+      <h3>Finalizados</h3>
+      <p id="statFechado">0</p>
+    </div>
   </div>
+
+  <div class="controls-box">
+    <div class="controls">
+      <button class="btn btn-success" onclick="novo()">+ Novo Chamado</button>
+      <input id="busca" placeholder="Buscar por título..." oninput="render()">
+      <select id="filtro" onchange="render()">
+        <option value="">Todos os status</option>
+        <option value="Aberto">Aberto</option>
+        <option value="Em andamento">Em andamento</option>
+        <option value="Fechado">Fechado</option>
+        <option value="Concluído">Concluído</option>
+      </select>
+    </div>
+  </div>
+
+  <div id="lista" class="grid-chamados"></div>
+
 </div>
 
 <script>
-const API="https://backend-chamados-production.up.railway.app";
+const API = "https://backend-chamados-production.up.railway.app";
+let chamados = [];
 
-let usuario=JSON.parse(localStorage.getItem("usuario"));
-let chamados=[];
-let editando=null;
+let usuario = null;
 
-if(!usuario) location.href="index.html";
-
-function carregar(){
-  fetch(`${API}/chamados?usuario_id=${usuario.usuario_id}&tipo_usuario=${usuario.tipo_usuario}`)
-  .then(r=>r.json())
-  .then(data=>{
-    chamados=data;
-    render();
-  });
+try {
+  usuario =
+    JSON.parse(localStorage.getItem("usuario")) ||
+    JSON.parse(localStorage.getItem("usuarioLogado"));
+} catch (e) {
+  console.error("Erro ao ler localStorage:", e);
 }
 
-function render(){
-  const lista=document.getElementById("lista");
-  lista.innerHTML="";
+if (!usuario) {
+  window.location.href = "index.html";
+}
 
-  chamados.forEach(c=>{
+if (usuario) {
+  usuario.usuario_id =
+    usuario.usuario_id ?? usuario.id ?? usuario.id_usuario ?? usuario.usuarioId;
 
-    // 🔥 REGRA AQUI
-    const podeEditar = usuario.tipo_usuario === "admin" && c.status_chamado !== "Fechado";
+  usuario.tipo_usuario =
+    usuario.tipo_usuario ?? usuario.tipo ?? usuario.perfil ?? usuario.tipoUser;
 
-    lista.innerHTML+=`
+  usuario.nome_exibicao =
+    usuario.nome ?? usuario.login ?? usuario.usuario ?? "Usuário";
+}
+
+document.getElementById("usuarioInfo").innerText =
+  `${usuario.nome_exibicao} • ${usuario.tipo_usuario}`;
+
+function toast(msg, type = "success") {
+  const t = document.createElement("div");
+  t.className = "toast " + type;
+  t.innerText = msg;
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 3000);
+}
+
+function atualizarEstatisticas(lista) {
+  const total = lista.length;
+  const aberto = lista.filter(c => c.status_chamado === "Aberto").length;
+  const andamento = lista.filter(c => c.status_chamado === "Em andamento").length;
+  const fechado = lista.filter(c =>
+    c.status_chamado === "Fechado" || c.status_chamado === "Concluído"
+  ).length;
+
+  document.getElementById("statTotal").innerText = total;
+  document.getElementById("statAberto").innerText = aberto;
+  document.getElementById("statAndamento").innerText = andamento;
+  document.getElementById("statFechado").innerText = fechado;
+}
+
+async function carregar() {
+  try {
+    const url = `${API}/chamados?usuario_id=${usuario.usuario_id}&tipo_usuario=${encodeURIComponent(usuario.tipo_usuario)}`;
+    const res = await fetch(url);
+    const texto = await res.text();
+
+    try {
+      chamados = JSON.parse(texto);
+    } catch {
+      chamados = [];
+      toast("Erro ao carregar chamados", "error");
+      return;
+    }
+
+    if (!Array.isArray(chamados)) chamados = [];
+
+    atualizarEstatisticas(chamados);
+    render();
+  } catch (error) {
+    console.error(error);
+    toast("Erro ao conectar com o servidor", "error");
+  }
+}
+
+function render() {
+  const lista = document.getElementById("lista");
+  const busca = document.getElementById("busca").value.toLowerCase();
+  const filtro = document.getElementById("filtro").value;
+
+  const filtrados = chamados
+    .filter(c => (c.titulo || "").toLowerCase().includes(busca))
+    .filter(c => !filtro || c.status_chamado === filtro);
+
+  lista.innerHTML = "";
+
+  if (filtrados.length === 0) {
+    lista.innerHTML = `
+      <div class="empty" style="grid-column:1/-1;">
+        <h3>Nenhum chamado encontrado</h3>
+        <p>Tente alterar o filtro, pesquisar outro termo ou criar um novo chamado.</p>
+      </div>
+    `;
+    return;
+  }
+
+  filtrados.forEach(c => {
+    const statusBloqueado =
+      c.status_chamado === "Fechado" || c.status_chamado === "Concluído";
+
+    const podeEditar = usuario.tipo_usuario === "admin" && !statusBloqueado;
+
+    const classeStatus = String(c.status_chamado || "")
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/\s+/g, "")
+      .toLowerCase();
+
+    lista.innerHTML += `
       <div class="card">
-        <h3>${c.titulo}</h3>
-        <p>${c.descricao||""}</p>
+        <h3>${c.titulo || ""}</h3>
 
-        <p><b>Morador:</b> ${c.morador}</p>
-        <p><b>Local:</b> ${c.local_chamado}</p>
+        <p class="desc">${c.descricao || "Sem descrição informada."}</p>
 
-        <span class="status ${c.status_chamado.replace(" ","").toLowerCase()}">
-          ${c.status_chamado}
-        </span>
+        <div class="info">
+          <p><strong>Morador:</strong> <span>${c.morador || "-"}</span></p>
+          <p><strong>Local:</strong> <span>${c.local_chamado || "-"}</span></p>
+        </div>
 
-        ${podeEditar?`
-        <div style="margin-top:10px;">
-          <button class="btn btn-warning" onclick='editar(${JSON.stringify(c)})'>Editar</button>
-          <button class="btn btn-danger" onclick="excluir(${c.chamado_id})">Excluir</button>
-        </div>`:""}
+        <div class="footer-card">
+          <span class="status ${classeStatus}">
+            ${c.status_chamado || "Sem status"}
+          </span>
+
+          ${podeEditar ? `
+            <div class="acoes">
+              <button class="btn btn-warning" onclick="editar(${c.chamado_id})">Editar</button>
+              <button class="btn btn-danger" onclick="excluir(${c.chamado_id})">Excluir</button>
+            </div>
+          ` : ""}
+        </div>
       </div>
     `;
   });
 }
 
-function abrirModalNovo(){
-  editando=null;
-  document.getElementById("modal").classList.add("show");
-}
+async function novo() {
+  const titulo = prompt("Título do chamado:");
+  const morador = prompt("Nome do morador:");
+  const local = prompt("Local do problema:");
+  const descricao = prompt("Descrição do chamado:");
 
-function editar(c){
-  editando=c;
-  document.getElementById("titulo").value=c.titulo;
-  document.getElementById("morador").value=c.morador;
-  document.getElementById("local").value=c.local_chamado;
-  document.getElementById("status").value=c.status_chamado;
-  document.getElementById("descricao").value=c.descricao;
-
-  document.getElementById("modal").classList.add("show");
-}
-
-function fecharModal(){
-  document.getElementById("modal").classList.remove("show");
-}
-
-function salvar(){
-  const titulo=document.getElementById("titulo").value;
-  const morador=document.getElementById("morador").value;
-  const local=document.getElementById("local").value;
-  const status=document.getElementById("status").value;
-  const descricao=document.getElementById("descricao").value;
-
-  if(!titulo||!morador||!local){
-    alert("Preencha os campos");
+  if (!titulo || !morador || !local) {
+    toast("Preencha os campos obrigatórios", "error");
     return;
   }
 
-  if(!editando){
-    fetch(`${API}/chamados`,{
-      method:"POST",
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({
+  try {
+    await fetch(`${API}/chamados`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
         titulo,
         morador,
-        local_chamado:local,
-        status_chamado:"Aberto",
+        local_chamado: local,
+        status_chamado: "Aberto",
         descricao,
-        usuario_id:usuario.usuario_id
+        usuario_id: usuario.usuario_id
       })
-    }).then(()=>carregar());
-  }else{
-    fetch(`${API}/chamados/${editando.chamado_id}`,{
-      method:"PUT",
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({
-        titulo,
-        morador,
-        local_chamado:local,
-        status_chamado:status,
-        descricao,
-        tipo_usuario:usuario.tipo_usuario
-      })
-    }).then(()=>carregar());
+    });
+
+    toast("Chamado criado com sucesso");
+    carregar();
+  } catch (error) {
+    console.error(error);
+    toast("Erro ao criar chamado", "error");
+  }
+}
+
+async function editar(id) {
+  const titulo = prompt("Novo título:");
+  const status = prompt("Status: Aberto / Em andamento / Fechado / Concluído");
+
+  if (!titulo || !status) {
+    toast("Preencha os campos para editar", "error");
+    return;
   }
 
-  fecharModal();
+  try {
+    await fetch(`${API}/chamados/${id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        titulo,
+        morador: "-",
+        local_chamado: "-",
+        status_chamado: status,
+        descricao: "",
+        tipo_usuario: usuario.tipo_usuario
+      })
+    });
+
+    toast("Chamado atualizado com sucesso");
+    carregar();
+  } catch (error) {
+    console.error(error);
+    toast("Erro ao atualizar chamado", "error");
+  }
 }
 
-function excluir(id){
-  if(!confirm("Excluir?")) return;
+async function excluir(id) {
+  if (!confirm("Deseja realmente excluir este chamado?")) return;
 
-  fetch(`${API}/chamados/${id}`,{
-    method:"DELETE",
-    headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({
-      tipo_usuario:usuario.tipo_usuario
-    })
-  }).then(()=>carregar());
+  try {
+    await fetch(`${API}/chamados/${id}`, {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        tipo_usuario: usuario.tipo_usuario
+      })
+    });
+
+    toast("Chamado excluído com sucesso");
+    carregar();
+  } catch (error) {
+    console.error(error);
+    toast("Erro ao excluir chamado", "error");
+  }
 }
 
-function logout(){
-  localStorage.clear();
-  location.href="index.html";
+function logout() {
+  localStorage.removeItem("usuario");
+  localStorage.removeItem("usuarioLogado");
+  window.location.href = "index.html";
 }
 
 carregar();
