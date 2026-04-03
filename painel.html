@@ -34,6 +34,7 @@
     .usuario-info {
       font-size: 14px;
       opacity: 0.95;
+      margin-top: 6px;
     }
 
     .logout {
@@ -265,7 +266,7 @@
 
     <div class="topo-tabela">
       <h2>Lista de Chamados</h2>
-      <button class="novo" id="btnNovoChamado" onclick="abrirModal()">+ Novo Chamado</button>
+      <button class="novo" onclick="abrirModal()">+ Novo Chamado</button>
     </div>
 
     <div class="tabela-box">
@@ -357,19 +358,19 @@
     }
 
     function carregarChamados() {
-      fetch(`${API_URL}/chamados`)
+      let url = `${API_URL}/chamados`;
+
+      if (usuarioLogado.tipo_usuario === 'cliente') {
+        url = `${API_URL}/chamados?usuario_id=${usuarioLogado.usuario_id}&tipo_usuario=cliente`;
+      }
+
+      fetch(url)
         .then(response => response.json())
         .then(data => {
           const tabela = document.getElementById('tabelaChamados');
           tabela.innerHTML = '';
 
-          let chamadosFiltrados = data;
-
-          if (usuarioLogado.tipo_usuario === 'cliente') {
-            chamadosFiltrados = data.filter(chamado => chamado.morador === usuarioLogado.nome);
-          }
-
-          chamadosFiltrados.forEach(chamado => {
+          data.forEach(chamado => {
             let botoesAcoes = '';
 
             if (usuarioLogado.tipo_usuario === 'admin') {
@@ -393,7 +394,7 @@
             `;
           });
 
-          atualizarResumo(chamadosFiltrados);
+          atualizarResumo(data);
         })
         .catch(error => {
           console.error('Erro ao carregar chamados:', error);
@@ -436,7 +437,8 @@
         morador: morador,
         local_chamado: local,
         status_chamado: status,
-        descricao: descricao
+        descricao: descricao,
+        usuario_id: usuarioLogado.usuario_id
       };
 
       if (idEditando) {
