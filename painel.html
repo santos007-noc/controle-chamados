@@ -438,7 +438,8 @@
         local_chamado: local,
         status_chamado: status,
         descricao: descricao,
-        usuario_id: usuarioLogado.usuario_id
+        usuario_id: usuarioLogado.usuario_id,
+        tipo_usuario: usuarioLogado.tipo_usuario
       };
 
       if (idEditando) {
@@ -450,7 +451,12 @@
           body: JSON.stringify(dados)
         })
         .then(response => response.json())
-        .then(() => {
+        .then(data => {
+          if (data.erro) {
+            alert(data.erro);
+            return;
+          }
+
           fecharModal();
           carregarChamados();
         })
@@ -467,7 +473,12 @@
           body: JSON.stringify(dados)
         })
         .then(response => response.json())
-        .then(() => {
+        .then(data => {
+          if (data.erro) {
+            alert(data.erro);
+            return;
+          }
+
           fecharModal();
           carregarChamados();
         })
@@ -504,10 +515,21 @@
       if (!confirmar) return;
 
       fetch(`${API_URL}/chamados/${id}`, {
-        method: 'DELETE'
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          tipo_usuario: usuarioLogado.tipo_usuario
+        })
       })
       .then(response => response.json())
-      .then(() => {
+      .then(data => {
+        if (data.erro) {
+          alert(data.erro);
+          return;
+        }
+
         carregarChamados();
       })
       .catch(error => {
