@@ -1,1062 +1,224 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Painel de Chamados</title>
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: "Segoe UI", Arial, sans-serif;
-    }
-
-    body {
-      background: linear-gradient(135deg, #eef4ff, #f7f9fc);
-      color: #1f2937;
-      min-height: 100vh;
-    }
-
-    header {
-      background: linear-gradient(135deg, #1d4ed8, #2563eb);
-      color: white;
-      padding: 20px 30px;
-      box-shadow: 0 4px 16px rgba(0,0,0,0.12);
-    }
-
-    .header-top {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 20px;
-      flex-wrap: wrap;
-    }
-
-    .brand h1 {
-      font-size: 28px;
-      margin-bottom: 6px;
-    }
-
-    .brand p {
-      font-size: 14px;
-      opacity: 0.95;
-    }
-
-    .user-box {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      flex-wrap: wrap;
-    }
-
-    .user-info {
-      background: rgba(255,255,255,0.16);
-      padding: 10px 14px;
-      border-radius: 12px;
-      font-size: 14px;
-    }
-
-    .btn {
-      border: none;
-      border-radius: 10px;
-      padding: 11px 16px;
-      font-size: 14px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: 0.2s ease;
-    }
-
-    .btn:hover {
-      transform: translateY(-1px);
-    }
-
-    .btn-primary {
-      background: #2563eb;
-      color: white;
-    }
-
-    .btn-primary:hover {
-      background: #1d4ed8;
-    }
-
-    .btn-success {
-      background: #16a34a;
-      color: white;
-    }
-
-    .btn-success:hover {
-      background: #15803d;
-    }
-
-    .btn-warning {
-      background: #f59e0b;
-      color: white;
-    }
-
-    .btn-warning:hover {
-      background: #d97706;
-    }
-
-    .btn-danger {
-      background: #dc2626;
-      color: white;
-    }
-
-    .btn-danger:hover {
-      background: #b91c1c;
-    }
-
-    .btn-secondary {
-      background: #64748b;
-      color: white;
-    }
-
-    .btn-secondary:hover {
-      background: #475569;
-    }
-
-    .container {
-      max-width: 1200px;
-      margin: 28px auto;
-      padding: 0 20px 40px;
-    }
-
-    .cards-resumo {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 18px;
-      margin-bottom: 22px;
-    }
-
-    .card-resumo {
-      background: white;
-      border-radius: 18px;
-      padding: 20px;
-      box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
-      border: 1px solid #e5e7eb;
-    }
-
-    .card-resumo h3 {
-      font-size: 14px;
-      color: #64748b;
-      margin-bottom: 10px;
-    }
-
-    .card-resumo .valor {
-      font-size: 30px;
-      font-weight: 700;
-      color: #0f172a;
-    }
-
-    .toolbar {
-      background: white;
-      border-radius: 18px;
-      padding: 18px;
-      box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
-      border: 1px solid #e5e7eb;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 22px;
-    }
-
-    .toolbar-left,
-    .toolbar-right {
-      display: flex;
-      gap: 12px;
-      flex-wrap: wrap;
-      align-items: center;
-    }
-
-    .input,
-    select,
-    textarea {
-      width: 100%;
-      padding: 12px 14px;
-      border: 1px solid #cbd5e1;
-      border-radius: 10px;
-      outline: none;
-      font-size: 14px;
-      transition: 0.2s;
-      background: #fff;
-    }
-
-    .input:focus,
-    select:focus,
-    textarea:focus {
-      border-color: #2563eb;
-      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
-    }
-
-    .search-box {
-      min-width: 260px;
-    }
-
-    .filter-box {
-      min-width: 190px;
-    }
-
-    .painel-chamados {
-      display: grid;
-      gap: 16px;
-    }
-
-    .chamado-card {
-      background: white;
-      border-radius: 18px;
-      padding: 20px;
-      box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
-      border: 1px solid #e5e7eb;
-      transition: 0.2s ease;
-    }
-
-    .chamado-card:hover {
-      transform: translateY(-2px);
-    }
-
-    .chamado-topo {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      gap: 16px;
-      flex-wrap: wrap;
-      margin-bottom: 14px;
-    }
-
-    .chamado-titulo {
-      font-size: 20px;
-      font-weight: 700;
-      color: #0f172a;
-      margin-bottom: 6px;
-    }
-
-    .chamado-meta {
-      font-size: 13px;
-      color: #64748b;
-      display: flex;
-      gap: 14px;
-      flex-wrap: wrap;
-    }
-
-    .chamado-descricao {
-      color: #334155;
-      font-size: 15px;
-      line-height: 1.6;
-      margin-top: 10px;
-      white-space: pre-wrap;
-    }
-
-    .status-badge {
-      display: inline-flex;
-      align-items: center;
-      padding: 8px 14px;
-      border-radius: 999px;
-      font-size: 13px;
-      font-weight: 700;
-      white-space: nowrap;
-    }
-
-    .status-aberto {
-      background: #dbeafe;
-      color: #1d4ed8;
-    }
-
-    .status-em-andamento {
-      background: #fef3c7;
-      color: #b45309;
-    }
-
-    .status-fechado {
-      background: #dcfce7;
-      color: #15803d;
-    }
-
-    .status-cancelado {
-      background: #fee2e2;
-      color: #b91c1c;
-    }
-
-    .chamado-acoes {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin-top: 18px;
-    }
-
-    .vazio {
-      background: white;
-      border-radius: 18px;
-      padding: 34px 20px;
-      text-align: center;
-      color: #64748b;
-      box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
-      border: 1px solid #e5e7eb;
-    }
-
-    .toast-container {
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      z-index: 9999;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      max-width: 360px;
-    }
-
-    .toast {
-      padding: 14px 16px;
-      border-radius: 14px;
-      color: white;
-      font-size: 14px;
-      font-weight: 500;
-      box-shadow: 0 10px 24px rgba(15, 23, 42, 0.2);
-      animation: slideIn 0.25s ease;
-    }
-
-    .toast.success {
-      background: #16a34a;
-    }
-
-    .toast.error {
-      background: #dc2626;
-    }
-
-    .toast.info {
-      background: #2563eb;
-    }
-
-    .toast.warning {
-      background: #f59e0b;
-    }
-
-    @keyframes slideIn {
-      from {
-        opacity: 0;
-        transform: translateX(30px);
-      }
-      to {
-        opacity: 1;
-        transform: translateX(0);
-      }
-    }
-
-    .modal-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(15, 23, 42, 0.55);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-      z-index: 9998;
-    }
-
-    .modal-overlay.show {
-      display: flex;
-    }
-
-    .modal {
-      width: 100%;
-      max-width: 560px;
-      background: white;
-      border-radius: 20px;
-      padding: 24px;
-      box-shadow: 0 20px 50px rgba(0,0,0,0.25);
-    }
-
-    .modal h2 {
-      margin-bottom: 18px;
-      color: #0f172a;
-      font-size: 24px;
-    }
-
-    .form-group {
-      margin-bottom: 14px;
-    }
-
-    .form-group label {
-      display: block;
-      margin-bottom: 7px;
-      font-size: 14px;
-      font-weight: 600;
-      color: #334155;
-    }
-
-    .modal-actions {
-      display: flex;
-      justify-content: flex-end;
-      gap: 10px;
-      margin-top: 20px;
-      flex-wrap: wrap;
-    }
-
-    .loading {
-      text-align: center;
-      color: #64748b;
-      padding: 30px;
-    }
-
-    .footer-note {
-      text-align: center;
-      color: #64748b;
-      font-size: 13px;
-      margin-top: 26px;
-    }
-
-    @media (max-width: 768px) {
-      .header-top {
-        flex-direction: column;
-        align-items: flex-start;
-      }
-
-      .toolbar {
-        flex-direction: column;
-        align-items: stretch;
-      }
-
-      .toolbar-left,
-      .toolbar-right {
-        width: 100%;
-      }
-
-      .search-box,
-      .filter-box {
-        min-width: 100%;
-      }
-
-      .chamado-topo {
-        flex-direction: column;
-        align-items: flex-start;
-      }
-
-      .chamado-acoes {
-        width: 100%;
-      }
-
-      .chamado-acoes .btn {
-        width: 100%;
-      }
-    }
-  </style>
+<meta charset="UTF-8">
+<title>Painel de Chamados</title>
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:"Segoe UI";}
+body{background:#eef2f7;}
+
+header{
+  background:#1e3a8a;
+  color:white;
+  padding:20px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.container{padding:20px;}
+
+.btn{
+  padding:10px 15px;
+  border:none;
+  border-radius:6px;
+  cursor:pointer;
+}
+
+.btn-primary{background:#2563eb;color:white;}
+.btn-danger{background:#dc2626;color:white;}
+.btn-warning{background:#f59e0b;color:white;}
+.btn-success{background:#16a34a;color:white;}
+
+.card{
+  background:white;
+  padding:20px;
+  border-radius:10px;
+  margin-bottom:15px;
+  box-shadow:0 2px 10px rgba(0,0,0,0.1);
+}
+
+.status{
+  padding:5px 10px;
+  border-radius:20px;
+  font-size:12px;
+  font-weight:bold;
+}
+
+.aberto{background:#dbeafe;color:#1e40af;}
+.andamento{background:#fef3c7;color:#92400e;}
+.fechado{background:#dcfce7;color:#166534;}
+
+.actions{
+  margin-top:10px;
+}
+
+.toast{
+  position:fixed;
+  top:20px;
+  right:20px;
+  padding:12px 20px;
+  border-radius:8px;
+  color:white;
+  font-weight:bold;
+  animation:fade 3s forwards;
+}
+
+.success{background:#16a34a;}
+.error{background:#dc2626;}
+
+@keyframes fade{
+  0%{opacity:1}
+  100%{opacity:0}
+}
+</style>
 </head>
+
 <body>
-  <header>
-    <div class="header-top">
-      <div class="brand">
-        <h1>Controle de Chamados</h1>
-        <p>Painel de acompanhamento de consertos e solicitações</p>
-      </div>
 
-      <div class="user-box">
-        <div class="user-info" id="usuarioInfo">Carregando usuário...</div>
-        <button class="btn btn-danger" id="btnLogout">Sair</button>
-      </div>
-    </div>
-  </header>
+<header>
+  <h2>Painel de Chamados</h2>
+  <button class="btn btn-danger" onclick="logout()">Sair</button>
+</header>
 
-  <div class="container">
-    <section class="cards-resumo">
-      <div class="card-resumo">
-        <h3>Total de chamados</h3>
-        <div class="valor" id="totalChamados">0</div>
-      </div>
-      <div class="card-resumo">
-        <h3>Abertos</h3>
-        <div class="valor" id="totalAbertos">0</div>
-      </div>
-      <div class="card-resumo">
-        <h3>Em andamento</h3>
-        <div class="valor" id="totalAndamento">0</div>
-      </div>
-      <div class="card-resumo">
-        <h3>Fechados</h3>
-        <div class="valor" id="totalFechados">0</div>
-      </div>
-    </section>
+<div class="container">
 
-    <section class="toolbar">
-      <div class="toolbar-left">
-        <button class="btn btn-success" id="btnNovoChamado">+ Novo Chamado</button>
-      </div>
-
-      <div class="toolbar-right">
-        <div class="search-box">
-          <input
-            type="text"
-            id="buscaInput"
-            class="input"
-            placeholder="Buscar por título ou descrição..."
-          />
-        </div>
-
-        <div class="filter-box">
-          <select id="filtroStatus">
-            <option value="">Todos os status</option>
-            <option value="Aberto">Aberto</option>
-            <option value="Em andamento">Em andamento</option>
-            <option value="Fechado">Fechado</option>
-            <option value="Cancelado">Cancelado</option>
-          </select>
-        </div>
-      </div>
-    </section>
-
-    <section id="listaChamados" class="painel-chamados">
-      <div class="loading">Carregando chamados...</div>
-    </section>
-
-    <div class="footer-note">
-      Somente chamados com status <strong>Aberto</strong> podem ser alterados ou excluídos.
-    </div>
+  <div style="margin-bottom:15px;">
+    <button class="btn btn-success" onclick="abrirNovo()">+ Novo Chamado</button>
+    <input id="busca" placeholder="Buscar..." style="padding:8px;margin-left:10px;">
+    <select id="filtro" onchange="render()">
+      <option value="">Todos</option>
+      <option value="Aberto">Aberto</option>
+      <option value="Em andamento">Em andamento</option>
+      <option value="Fechado">Fechado</option>
+    </select>
   </div>
 
-  <div class="toast-container" id="toastContainer"></div>
+  <div id="lista"></div>
+</div>
 
-  <div class="modal-overlay" id="modalOverlay">
-    <div class="modal">
-      <h2 id="modalTitulo">Novo Chamado</h2>
+<script>
 
-      <form id="formChamado">
-        <input type="hidden" id="chamadoId" />
+const API_URL = "https://backend-chamados-production.up.railway.app";
 
-        <div class="form-group">
-          <label for="titulo">Título</label>
-          <input type="text" id="titulo" class="input" required />
-        </div>
+let chamados = [];
+let usuario = JSON.parse(localStorage.getItem("usuario"));
+let token = localStorage.getItem("token");
 
-        <div class="form-group">
-          <label for="descricao">Descrição</label>
-          <textarea id="descricao" rows="5" required></textarea>
-        </div>
+if(!usuario){
+  window.location.href = "index.html";
+}
 
-        <div class="form-group" id="grupoStatus" style="display: none;">
-          <label for="status">Status</label>
-          <select id="status">
-            <option value="Aberto">Aberto</option>
-            <option value="Em andamento">Em andamento</option>
-            <option value="Fechado">Fechado</option>
-            <option value="Cancelado">Cancelado</option>
-          </select>
-        </div>
+// ================= TOAST =================
+function toast(msg,type="success"){
+  const t=document.createElement("div");
+  t.className=`toast ${type}`;
+  t.innerText=msg;
+  document.body.appendChild(t);
+  setTimeout(()=>t.remove(),3000);
+}
 
-        <div class="modal-actions">
-          <button type="button" class="btn btn-secondary" id="btnCancelarModal">Cancelar</button>
-          <button type="submit" class="btn btn-primary" id="btnSalvarChamado">Salvar</button>
-        </div>
-      </form>
+// ================= LOGOUT =================
+function logout(){
+  localStorage.clear();
+  window.location.href="index.html";
+}
+
+// ================= LOAD =================
+async function carregar(){
+  const res = await fetch(`${API_URL}/chamados`,{
+    headers:{Authorization:`Bearer ${token}`}
+  });
+  chamados = await res.json();
+  render();
+}
+
+function render(){
+  const lista=document.getElementById("lista");
+  const busca=document.getElementById("busca").value.toLowerCase();
+  const filtro=document.getElementById("filtro").value;
+
+  lista.innerHTML="";
+
+  chamados
+  .filter(c=>c.titulo.toLowerCase().includes(busca))
+  .filter(c=>!filtro || c.status===filtro)
+  .forEach(c=>{
+
+    let podeEditar = usuario.tipo_usuario==="admin" && c.status==="Aberto";
+
+    lista.innerHTML+=`
+    <div class="card">
+      <h3>${c.titulo}</h3>
+      <p>${c.descricao}</p>
+      <span class="status ${c.status.toLowerCase().replace(" ","")}">${c.status}</span>
+
+      ${podeEditar ? `
+      <div class="actions">
+        <button class="btn btn-warning" onclick="editar(${c.id})">Editar</button>
+        <button class="btn btn-danger" onclick="excluir(${c.id})">Excluir</button>
+      </div>
+      ` : ""}
+
     </div>
-  </div>
+    `;
+  });
+}
+
+// ================= CRUD =================
+async function abrirNovo(){
+  const titulo=prompt("Título:");
+  const descricao=prompt("Descrição:");
+
+  if(!titulo||!descricao) return;
+
+  await fetch(`${API_URL}/chamados`,{
+    method:"POST",
+    headers:{
+      "Content-Type":"application/json",
+      Authorization:`Bearer ${token}`
+    },
+    body:JSON.stringify({titulo,descricao})
+  });
+
+  toast("Chamado criado");
+  carregar();
+}
+
+async function editar(id){
+  const titulo=prompt("Novo título:");
+  const descricao=prompt("Nova descrição:");
+
+  await fetch(`${API_URL}/chamados/${id}`,{
+    method:"PUT",
+    headers:{
+      "Content-Type":"application/json",
+      Authorization:`Bearer ${token}`
+    },
+    body:JSON.stringify({titulo,descricao})
+  });
+
+  toast("Atualizado");
+  carregar();
+}
+
+async function excluir(id){
+  if(!confirm("Excluir?")) return;
+
+  await fetch(`${API_URL}/chamados/${id}`,{
+    method:"DELETE",
+    headers:{Authorization:`Bearer ${token}`}
+  });
+
+  toast("Excluído");
+  carregar();
+}
+
+// ================= INIT =================
+carregar();
+
+</script>
 
-  <script>
-    // ==========================
-    // CONFIGURAÇÃO
-    // ==========================
-    const API_URL = "https://SEU-BACKEND.up.railway.app";
-
-    // ==========================
-    // ESTADO
-    // ==========================
-    let chamados = [];
-    let usuarioLogado = null;
-    let token = null;
-    let editando = false;
-
-    // ==========================
-    // ELEMENTOS
-    // ==========================
-    const usuarioInfo = document.getElementById("usuarioInfo");
-    const btnLogout = document.getElementById("btnLogout");
-    const btnNovoChamado = document.getElementById("btnNovoChamado");
-    const listaChamados = document.getElementById("listaChamados");
-    const buscaInput = document.getElementById("buscaInput");
-    const filtroStatus = document.getElementById("filtroStatus");
-
-    const totalChamados = document.getElementById("totalChamados");
-    const totalAbertos = document.getElementById("totalAbertos");
-    const totalAndamento = document.getElementById("totalAndamento");
-    const totalFechados = document.getElementById("totalFechados");
-
-    const modalOverlay = document.getElementById("modalOverlay");
-    const modalTitulo = document.getElementById("modalTitulo");
-    const formChamado = document.getElementById("formChamado");
-    const chamadoId = document.getElementById("chamadoId");
-    const tituloInput = document.getElementById("titulo");
-    const descricaoInput = document.getElementById("descricao");
-    const statusInput = document.getElementById("status");
-    const grupoStatus = document.getElementById("grupoStatus");
-    const btnCancelarModal = document.getElementById("btnCancelarModal");
-    const btnSalvarChamado = document.getElementById("btnSalvarChamado");
-    const toastContainer = document.getElementById("toastContainer");
-
-    // ==========================
-    // FUNÇÕES GERAIS
-    // ==========================
-    function showToast(message, type = "info") {
-      const toast = document.createElement("div");
-      toast.className = `toast ${type}`;
-      toast.textContent = message;
-
-      toastContainer.appendChild(toast);
-
-      setTimeout(() => {
-        toast.style.opacity = "0";
-        toast.style.transform = "translateX(20px)";
-        toast.style.transition = "0.3s ease";
-      }, 3000);
-
-      setTimeout(() => {
-        toast.remove();
-      }, 3400);
-    }
-
-    function getUsuarioStorage() {
-      const possibilidades = [
-        "usuarioLogado",
-        "usuario",
-        "user"
-      ];
-
-      for (const chave of possibilidades) {
-        const valor = localStorage.getItem(chave);
-        if (valor) {
-          try {
-            return JSON.parse(valor);
-          } catch (error) {
-            console.error(`Erro ao ler ${chave}:`, error);
-          }
-        }
-      }
-      return null;
-    }
-
-    function getTokenStorage() {
-      const possibilidades = [
-        "token",
-        "authToken",
-        "access_token"
-      ];
-
-      for (const chave of possibilidades) {
-        const valor = localStorage.getItem(chave);
-        if (valor) return valor;
-      }
-      return null;
-    }
-
-    function normalizarStatus(status) {
-      return (status || "").toString().trim().toLowerCase();
-    }
-
-    function getStatusClass(status) {
-      const s = normalizarStatus(status);
-
-      if (s === "aberto") return "status-aberto";
-      if (s === "em andamento") return "status-em-andamento";
-      if (s === "fechado") return "status-fechado";
-      if (s === "cancelado") return "status-cancelado";
-      return "status-aberto";
-    }
-
-    function formatarData(data) {
-      if (!data) return "Sem data";
-      const dt = new Date(data);
-      if (isNaN(dt)) return "Sem data";
-
-      return dt.toLocaleString("pt-BR", {
-        dateStyle: "short",
-        timeStyle: "short"
-      });
-    }
-
-    function isAdmin() {
-      return usuarioLogado && usuarioLogado.tipo_usuario === "admin";
-    }
-
-    function atualizarResumo() {
-      totalChamados.textContent = chamados.length;
-      totalAbertos.textContent = chamados.filter(c => normalizarStatus(c.status) === "aberto").length;
-      totalAndamento.textContent = chamados.filter(c => normalizarStatus(c.status) === "em andamento").length;
-      totalFechados.textContent = chamados.filter(c => normalizarStatus(c.status) === "fechado").length;
-    }
-
-    function abrirModalNovo() {
-      editando = false;
-      modalTitulo.textContent = "Novo Chamado";
-      chamadoId.value = "";
-      tituloInput.value = "";
-      descricaoInput.value = "";
-      statusInput.value = "Aberto";
-
-      // Cliente não precisa escolher status ao criar
-      if (isAdmin()) {
-        grupoStatus.style.display = "block";
-      } else {
-        grupoStatus.style.display = "none";
-      }
-
-      modalOverlay.classList.add("show");
-    }
-
-    function abrirModalEdicao(chamado) {
-      editando = true;
-      modalTitulo.textContent = "Editar Chamado";
-      chamadoId.value = chamado.id || "";
-      tituloInput.value = chamado.titulo || "";
-      descricaoInput.value = chamado.descricao || "";
-      statusInput.value = chamado.status || "Aberto";
-
-      if (isAdmin()) {
-        grupoStatus.style.display = "block";
-      } else {
-        grupoStatus.style.display = "none";
-      }
-
-      modalOverlay.classList.add("show");
-    }
-
-    function fecharModal() {
-      modalOverlay.classList.remove("show");
-      formChamado.reset();
-      chamadoId.value = "";
-      editando = false;
-    }
-
-    function headersJSON() {
-      const headers = {
-        "Content-Type": "application/json"
-      };
-
-      if (token) {
-        headers["Authorization"] = `Bearer ${token}`;
-      }
-
-      return headers;
-    }
-
-    // ==========================
-    // API
-    // ==========================
-    async function carregarChamados() {
-      listaChamados.innerHTML = '<div class="loading">Carregando chamados...</div>';
-
-      try {
-        const resposta = await fetch(`${API_URL}/chamados`, {
-          method: "GET",
-          headers: headersJSON()
-        });
-
-        const dados = await resposta.json();
-
-        if (!resposta.ok) {
-          throw new Error(dados.erro || "Erro ao carregar chamados.");
-        }
-
-        chamados = Array.isArray(dados) ? dados : [];
-        atualizarResumo();
-        renderizarChamados();
-      } catch (error) {
-        console.error(error);
-        listaChamados.innerHTML = `
-          <div class="vazio">
-            Não foi possível carregar os chamados.
-          </div>
-        `;
-        showToast(error.message || "Erro ao carregar chamados.", "error");
-      }
-    }
-
-    async function criarChamado(payload) {
-      try {
-        const resposta = await fetch(`${API_URL}/chamados`, {
-          method: "POST",
-          headers: headersJSON(),
-          body: JSON.stringify(payload)
-        });
-
-        const dados = await resposta.json();
-
-        if (!resposta.ok) {
-          throw new Error(dados.erro || "Erro ao criar chamado.");
-        }
-
-        showToast("Chamado criado com sucesso!", "success");
-        fecharModal();
-        await carregarChamados();
-      } catch (error) {
-        console.error(error);
-        showToast(error.message || "Erro ao criar chamado.", "error");
-      }
-    }
-
-    async function atualizarChamado(id, payload) {
-      try {
-        const resposta = await fetch(`${API_URL}/chamados/${id}`, {
-          method: "PUT",
-          headers: headersJSON(),
-          body: JSON.stringify(payload)
-        });
-
-        const dados = await resposta.json();
-
-        if (!resposta.ok) {
-          throw new Error(dados.erro || "Erro ao atualizar chamado.");
-        }
-
-        showToast("Chamado atualizado com sucesso!", "success");
-        fecharModal();
-        await carregarChamados();
-      } catch (error) {
-        console.error(error);
-        showToast(error.message || "Erro ao atualizar chamado.", "error");
-      }
-    }
-
-    async function excluirChamado(id) {
-      const confirmar = confirm("Deseja realmente excluir este chamado?");
-      if (!confirmar) return;
-
-      try {
-        const resposta = await fetch(`${API_URL}/chamados/${id}`, {
-          method: "DELETE",
-          headers: headersJSON()
-        });
-
-        const dados = await resposta.json();
-
-        if (!resposta.ok) {
-          throw new Error(dados.erro || "Erro ao excluir chamado.");
-        }
-
-        showToast("Chamado excluído com sucesso!", "success");
-        await carregarChamados();
-      } catch (error) {
-        console.error(error);
-        showToast(error.message || "Erro ao excluir chamado.", "error");
-      }
-    }
-
-    // ==========================
-    // RENDERIZAÇÃO
-    // ==========================
-    function renderizarChamados() {
-      const termo = buscaInput.value.trim().toLowerCase();
-      const statusSelecionado = filtroStatus.value.trim().toLowerCase();
-
-      let filtrados = chamados.filter(chamado => {
-        const titulo = (chamado.titulo || "").toLowerCase();
-        const descricao = (chamado.descricao || "").toLowerCase();
-        const status = (chamado.status || "").toLowerCase();
-
-        const bateBusca =
-          titulo.includes(termo) || descricao.includes(termo);
-
-        const bateStatus =
-          !statusSelecionado || status === statusSelecionado;
-
-        return bateBusca && bateStatus;
-      });
-
-      if (filtrados.length === 0) {
-        listaChamados.innerHTML = `
-          <div class="vazio">
-            Nenhum chamado encontrado com os filtros informados.
-          </div>
-        `;
-        return;
-      }
-
-      listaChamados.innerHTML = filtrados.map(chamado => {
-        const podeAlterar = normalizarStatus(chamado.status) === "aberto";
-        const mostrarAcoesAdmin = isAdmin() && podeAlterar;
-        const nomeUsuario = chamado.nome_usuario || chamado.usuario_nome || chamado.nome || "Não informado";
-
-        return `
-          <div class="chamado-card">
-            <div class="chamado-topo">
-              <div>
-                <div class="chamado-titulo">${escapeHTML(chamado.titulo || "Sem título")}</div>
-                <div class="chamado-meta">
-                  <span><strong>ID:</strong> ${chamado.id ?? "-"}</span>
-                  <span><strong>Criado em:</strong> ${formatarData(chamado.created_at || chamado.data_criacao)}</span>
-                  ${isAdmin() ? `<span><strong>Usuário:</strong> ${escapeHTML(nomeUsuario)}</span>` : ""}
-                </div>
-              </div>
-
-              <span class="status-badge ${getStatusClass(chamado.status)}">
-                ${escapeHTML(chamado.status || "Aberto")}
-              </span>
-            </div>
-
-            <div class="chamado-descricao">
-              ${escapeHTML(chamado.descricao || "Sem descrição")}
-            </div>
-
-            ${
-              mostrarAcoesAdmin
-                ? `
-                  <div class="chamado-acoes">
-                    <button class="btn btn-warning" onclick="handleEditar(${Number(chamado.id)})">Editar</button>
-                    <button class="btn btn-danger" onclick="handleExcluir(${Number(chamado.id)})">Excluir</button>
-                  </div>
-                `
-                : ""
-            }
-          </div>
-        `;
-      }).join("");
-    }
-
-    function escapeHTML(texto) {
-      return String(texto)
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
-    }
-
-    // ==========================
-    // AÇÕES GLOBAIS
-    // ==========================
-    window.handleEditar = function(id) {
-      const chamado = chamados.find(c => Number(c.id) === Number(id));
-
-      if (!chamado) {
-        showToast("Chamado não encontrado.", "error");
-        return;
-      }
-
-      if (normalizarStatus(chamado.status) !== "aberto") {
-        showToast("Somente chamados em aberto podem ser editados.", "warning");
-        return;
-      }
-
-      if (!isAdmin()) {
-        showToast("Apenas administradores podem editar chamados.", "warning");
-        return;
-      }
-
-      abrirModalEdicao(chamado);
-    };
-
-    window.handleExcluir = function(id) {
-      const chamado = chamados.find(c => Number(c.id) === Number(id));
-
-      if (!chamado) {
-        showToast("Chamado não encontrado.", "error");
-        return;
-      }
-
-      if (normalizarStatus(chamado.status) !== "aberto") {
-        showToast("Somente chamados em aberto podem ser excluídos.", "warning");
-        return;
-      }
-
-      if (!isAdmin()) {
-        showToast("Apenas administradores podem excluir chamados.", "warning");
-        return;
-      }
-
-      excluirChamado(id);
-    };
-
-    // ==========================
-    // EVENTOS
-    // ==========================
-    btnNovoChamado.addEventListener("click", () => {
-      abrirModalNovo();
-    });
-
-    btnCancelarModal.addEventListener("click", () => {
-      fecharModal();
-    });
-
-    modalOverlay.addEventListener("click", (event) => {
-      if (event.target === modalOverlay) {
-        fecharModal();
-      }
-    });
-
-    buscaInput.addEventListener("input", renderizarChamados);
-    filtroStatus.addEventListener("change", renderizarChamados);
-
-    btnLogout.addEventListener("click", () => {
-      localStorage.removeItem("token");
-      localStorage.removeItem("authToken");
-      localStorage.removeItem("access_token");
-      localStorage.removeItem("usuarioLogado");
-      localStorage.removeItem("usuario");
-      localStorage.removeItem("user");
-
-      showToast("Logout realizado com sucesso!", "success");
-
-      setTimeout(() => {
-        window.location.href = "index.html";
-      }, 700);
-    });
-
-    formChamado.addEventListener("submit", async (event) => {
-      event.preventDefault();
-
-      const titulo = tituloInput.value.trim();
-      const descricao = descricaoInput.value.trim();
-      const status = statusInput.value;
-
-      if (!titulo || !descricao) {
-        showToast("Preencha todos os campos obrigatórios.", "warning");
-        return;
-      }
-
-      btnSalvarChamado.disabled = true;
-      btnSalvarChamado.textContent = "Salvando...";
-
-      try {
-        if (editando) {
-          const id = chamadoId.value;
-
-          const payload = isAdmin()
-            ? { titulo, descricao, status }
-            : { titulo, descricao };
-
-          await atualizarChamado(id, payload);
-        } else {
-          const payload = isAdmin()
-            ? { titulo, descricao, status }
-            : { titulo, descricao };
-
-          await criarChamado(payload);
-        }
-      } finally {
-        btnSalvarChamado.disabled = false;
-        btnSalvarChamado.textContent = "Salvar";
-      }
-    });
-
-    // ==========================
-    // INICIALIZAÇÃO
-    // ==========================
-    function iniciarPainel() {
-      usuarioLogado = getUsuarioStorage();
-      token = getTokenStorage();
-
-      if (!usuarioLogado) {
-        window.location.href = "index.html";
-        return;
-      }
-
-      usuarioInfo.innerHTML = `
-        <strong>${escapeHTML(usuarioLogado.nome || "Usuário")}</strong>
-        (${escapeHTML(usuarioLogado.tipo_usuario || "cliente")})
-      `;
-
-      carregarChamados();
-    }
-
-    iniciarPainel();
-  </script>
 </body>
 </html>
