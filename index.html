@@ -1,139 +1,236 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Login - Controle de Chamados</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - Controle de Chamados</title>
 
-<style>
-*{
-  box-sizing:border-box;
-}
+  <style>
+    *{
+      box-sizing:border-box;
+      margin:0;
+      padding:0;
+      font-family:"Segoe UI", Arial, sans-serif;
+    }
 
-body{
-  margin:0;
-  font-family:"Segoe UI";
-  background:linear-gradient(135deg,#1e3a8a,#2563eb);
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  height:100vh;
-}
+    body{
+      min-height:100vh;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      background:
+        radial-gradient(circle at top left, rgba(255,255,255,0.12), transparent 25%),
+        linear-gradient(135deg, #1e3a8a, #2563eb);
+      padding:20px;
+    }
 
-.box{
-  background:white;
-  padding:40px;
-  border-radius:20px;
-  width:320px;
-  box-shadow:0 20px 50px rgba(0,0,0,0.2);
-  text-align:center;
-}
+    .box{
+      width:100%;
+      max-width:420px;
+      background:rgba(255,255,255,0.97);
+      padding:42px 34px;
+      border-radius:24px;
+      box-shadow:0 25px 60px rgba(0,0,0,0.20);
+      text-align:center;
+      animation:subir 0.45s ease;
+    }
 
-h2{
-  margin-bottom:20px;
-}
+    .icon{
+      width:74px;
+      height:74px;
+      margin:0 auto 18px;
+      border-radius:20px;
+      background:linear-gradient(135deg, #1e3a8a, #2563eb);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color:white;
+      font-size:32px;
+      box-shadow:0 10px 25px rgba(37,99,235,0.30);
+    }
 
-input{
-  width:100%;
-  padding:12px;
-  margin:10px 0;
-  border-radius:10px;
-  border:1px solid #ccc;
-}
+    h2{
+      font-size:2rem;
+      line-height:1.2;
+      color:#0f172a;
+      margin-bottom:10px;
+    }
 
-button{
-  width:100%;
-  padding:12px;
-  margin-top:10px;
-  border:none;
-  border-radius:10px;
-  cursor:pointer;
-  font-weight:bold;
-}
+    .sub{
+      color:#64748b;
+      font-size:15px;
+      margin-bottom:28px;
+    }
 
-.login{
-  background:#2563eb;
-  color:white;
-}
+    .campo{
+      text-align:left;
+      margin-bottom:14px;
+    }
 
-.login:hover{
-  background:#1d4ed8;
-}
+    .campo label{
+      display:block;
+      margin-bottom:8px;
+      color:#334155;
+      font-size:14px;
+      font-weight:600;
+    }
 
-.cadastro{
-  background:#eee;
-}
+    input{
+      width:100%;
+      padding:14px 15px;
+      border-radius:14px;
+      border:1px solid #cbd5e1;
+      font-size:15px;
+      outline:none;
+      transition:0.2s;
+      background:#f8fafc;
+    }
 
-.mensagem{
-  margin-top:10px;
-  font-size:14px;
-}
-</style>
+    input:focus{
+      border-color:#2563eb;
+      background:white;
+      box-shadow:0 0 0 4px rgba(37,99,235,0.12);
+    }
+
+    button{
+      width:100%;
+      padding:14px;
+      margin-top:12px;
+      border:none;
+      border-radius:14px;
+      cursor:pointer;
+      font-weight:700;
+      font-size:15px;
+      transition:0.2s;
+    }
+
+    button:hover{
+      transform:translateY(-1px);
+    }
+
+    .login{
+      background:linear-gradient(135deg, #2563eb, #1d4ed8);
+      color:white;
+      box-shadow:0 10px 20px rgba(37,99,235,0.22);
+    }
+
+    .login:hover{
+      filter:brightness(1.03);
+    }
+
+    .cadastro{
+      background:#e5e7eb;
+      color:#111827;
+    }
+
+    .cadastro:hover{
+      background:#d1d5db;
+    }
+
+    .mensagem{
+      margin-top:14px;
+      font-size:14px;
+      min-height:20px;
+      font-weight:600;
+    }
+
+    @keyframes subir{
+      from{
+        opacity:0;
+        transform:translateY(18px);
+      }
+      to{
+        opacity:1;
+        transform:translateY(0);
+      }
+    }
+
+    @media (max-width:480px){
+      .box{
+        padding:34px 22px;
+        border-radius:20px;
+      }
+
+      h2{
+        font-size:1.7rem;
+      }
+    }
+  </style>
 </head>
 
 <body>
 
-<div class="box">
-  <h2>Controle de Chamados</h2>
+  <div class="box">
+    <div class="icon">🔐</div>
 
-  <input id="login" placeholder="Usuário">
-  <input id="senha" type="password" placeholder="Senha">
+    <h2>Controle de<br>Chamados</h2>
+    <p class="sub">Acesse o sistema para acompanhar e gerenciar solicitações</p>
 
-  <button class="login" onclick="login()">Entrar</button>
-  <button class="cadastro" onclick="irCadastro()">Cadastrar</button>
+    <div class="campo">
+      <label for="login">Usuário</label>
+      <input id="login" placeholder="Digite seu usuário">
+    </div>
 
-  <div id="mensagem" class="mensagem"></div>
-</div>
+    <div class="campo">
+      <label for="senha">Senha</label>
+      <input id="senha" type="password" placeholder="Digite sua senha">
+    </div>
 
-<script>
-const API = "https://backend-chamados-production.up.railway.app";
+    <button class="login" onclick="login()">Entrar</button>
+    <button class="cadastro" onclick="irCadastro()">Cadastrar</button>
 
-function login() {
-  const login = document.getElementById("login").value.trim();
-  const senha = document.getElementById("senha").value.trim();
-  const msg = document.getElementById("mensagem");
+    <div id="mensagem" class="mensagem"></div>
+  </div>
 
-  msg.innerText = "";
+  <script>
+    const API = "https://backend-chamados-production.up.railway.app";
 
-  if (!login || !senha) {
-    msg.innerText = "Preencha os campos";
-    msg.style.color = "red";
-    return;
-  }
+    function login() {
+      const login = document.getElementById("login").value.trim();
+      const senha = document.getElementById("senha").value.trim();
+      const msg = document.getElementById("mensagem");
 
-  fetch(`${API}/login`, {
-    method: "POST",
-    headers: {"Content-Type": "application/json"},
-    body: JSON.stringify({ login, senha })
-  })
-  .then(r => r.json())
-  .then(data => {
-    if (data.erro) {
-      msg.innerText = data.erro;
-      msg.style.color = "red";
-      return;
+      msg.innerText = "";
+
+      if (!login || !senha) {
+        msg.innerText = "Preencha os campos";
+        msg.style.color = "red";
+        return;
+      }
+
+      fetch(`${API}/login`, {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({ login, senha })
+      })
+      .then(r => r.json())
+      .then(data => {
+        if (data.erro) {
+          msg.innerText = data.erro;
+          msg.style.color = "red";
+          return;
+        }
+
+        const usuario = data.usuario || data;
+        localStorage.setItem("usuario", JSON.stringify(usuario));
+
+        msg.innerText = "Login realizado com sucesso!";
+        msg.style.color = "green";
+
+        setTimeout(() => {
+          location.href = "painel.html";
+        }, 800);
+      })
+      .catch(() => {
+        msg.innerText = "Erro no servidor";
+        msg.style.color = "red";
+      });
     }
 
-    const usuario = data.usuario || data;
-    localStorage.setItem("usuario", JSON.stringify(usuario));
-
-    msg.innerText = "Login realizado!";
-    msg.style.color = "green";
-
-    setTimeout(() => {
-      location.href = "painel.html";
-    }, 800);
-  })
-  .catch(() => {
-    msg.innerText = "Erro no servidor";
-    msg.style.color = "red";
-  });
-}
-
-function irCadastro() {
-  location.href = "cadastro.html";
-}
-</script>
+    function irCadastro() {
+      location.href = "cadastro.html";
+    }
+  </script>
 
 </body>
 </html>

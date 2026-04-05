@@ -6,23 +6,6 @@
 <title>Painel de Chamados</title>
 
 <style>
-:root{
-  --azul-escuro:#1e3a8a;
-  --azul:#2563eb;
-  --azul-claro:#dbeafe;
-  --verde:#16a34a;
-  --verde-claro:#dcfce7;
-  --amarelo:#f59e0b;
-  --amarelo-claro:#fef3c7;
-  --vermelho:#dc2626;
-  --cinza-fundo:#eef2f7;
-  --cinza-borda:#dbe2ea;
-  --cinza-texto:#475569;
-  --branco:#ffffff;
-  --sombra:0 10px 25px rgba(15, 23, 42, 0.08);
-  --radius:16px;
-}
-
 *{
   margin:0;
   padding:0;
@@ -31,34 +14,46 @@
 }
 
 body{
-  background:linear-gradient(180deg, #eaf1fb 0%, #eef2f7 100%);
+  background:#eef2f7;
   color:#0f172a;
-  min-height:100vh;
 }
 
+/* HEADER */
 header{
-  background:linear-gradient(135deg, var(--azul-escuro), #1d4ed8);
-  color:var(--branco);
-  padding:22px 28px;
+  background:linear-gradient(135deg,#1e3a8a,#2563eb);
+  color:white;
+  padding:20px 30px;
   display:flex;
   justify-content:space-between;
   align-items:center;
+  gap:12px;
   flex-wrap:wrap;
-  gap:16px;
-  box-shadow:var(--sombra);
+  box-shadow:0 10px 25px rgba(0,0,0,0.08);
 }
 
-.header-left h1{
-  font-size:34px;
-  margin-bottom:6px;
+.header-left{
+  display:flex;
+  align-items:center;
+  gap:12px;
 }
 
-.header-left p{
-  font-size:14px;
-  opacity:0.9;
+.header-logo{
+  width:48px;
+  height:48px;
+  border-radius:14px;
+  background:rgba(255,255,255,0.16);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:24px;
+  border:1px solid rgba(255,255,255,0.2);
 }
 
-.header-right{
+header h2{
+  font-size:24px;
+}
+
+.top-right{
   display:flex;
   align-items:center;
   gap:12px;
@@ -71,47 +66,58 @@ header{
   padding:10px 14px;
   border-radius:999px;
   font-size:14px;
-  backdrop-filter:blur(8px);
 }
 
+header button{
+  background:#dc2626;
+  color:white;
+  border:none;
+  padding:10px 16px;
+  border-radius:10px;
+  cursor:pointer;
+  font-weight:700;
+}
+
+/* CONTAINER */
 .container{
   max-width:1200px;
-  margin:28px auto;
+  margin:24px auto;
   padding:0 20px 30px;
 }
 
+/* STATS */
 .stats{
   display:grid;
-  grid-template-columns:repeat(4, 1fr);
+  grid-template-columns:repeat(4,1fr);
   gap:14px;
   margin-bottom:18px;
 }
 
-.stat-box{
-  background:var(--branco);
-  border-radius:var(--radius);
+.stat{
+  background:white;
+  border-radius:16px;
   padding:18px;
-  box-shadow:var(--sombra);
-  border:1px solid var(--cinza-borda);
+  box-shadow:0 10px 25px rgba(15,23,42,0.08);
+  border:1px solid #dbe2ea;
 }
 
-.stat-box h3{
+.stat h3{
   font-size:13px;
-  color:var(--cinza-texto);
+  color:#64748b;
   margin-bottom:8px;
-  font-weight:600;
 }
 
-.stat-box p{
+.stat p{
   font-size:28px;
-  font-weight:700;
+  font-weight:800;
 }
 
-.controls-box{
-  background:rgba(255,255,255,0.9);
-  border:1px solid var(--cinza-borda);
-  border-radius:var(--radius);
-  box-shadow:var(--sombra);
+/* TOOLBAR */
+.toolbar{
+  background:white;
+  border:1px solid #dbe2ea;
+  border-radius:16px;
+  box-shadow:0 10px 25px rgba(15,23,42,0.08);
   padding:16px;
   margin-bottom:20px;
 }
@@ -123,43 +129,38 @@ header{
   align-items:center;
 }
 
-input, select{
-  height:48px;
-  border:1px solid var(--cinza-borda);
+input, select, textarea{
+  border:1px solid #cbd5e1;
   border-radius:12px;
-  padding:0 14px;
+  padding:12px 14px;
   font-size:15px;
-  background:var(--branco);
   outline:none;
   transition:0.2s;
+  background:#fff;
 }
 
-input:focus, select:focus{
-  border-color:var(--azul);
+input:focus, select:focus, textarea:focus{
+  border-color:#2563eb;
   box-shadow:0 0 0 4px rgba(37,99,235,0.12);
 }
 
 #busca{
   min-width:260px;
   flex:1;
+  height:48px;
 }
 
 #filtro{
   min-width:180px;
+  height:48px;
 }
 
 .btn{
-  height:48px;
-  padding:0 18px;
   border:none;
   border-radius:12px;
   cursor:pointer;
-  font-weight:600;
+  font-weight:700;
   transition:0.2s;
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  gap:8px;
 }
 
 .btn:hover{
@@ -167,54 +168,44 @@ input:focus, select:focus{
 }
 
 .btn-success{
-  background:var(--verde);
+  background:#16a34a;
   color:white;
-}
-
-.btn-success:hover{
-  background:#15803d;
+  height:48px;
+  padding:0 18px;
 }
 
 .btn-warning{
-  background:var(--amarelo);
+  background:#f59e0b;
   color:white;
-}
-
-.btn-warning:hover{
-  background:#d97706;
+  padding:10px 14px;
 }
 
 .btn-danger{
-  background:var(--vermelho);
+  background:#dc2626;
   color:white;
+  padding:10px 14px;
 }
 
-.btn-danger:hover{
-  background:#b91c1c;
+.btn-secondary{
+  background:#e5e7eb;
+  color:#111827;
+  padding:10px 14px;
 }
 
-.btn-outline{
-  background:rgba(255,255,255,0.16);
-  color:white;
-  border:1px solid rgba(255,255,255,0.25);
-}
-
-.btn-outline:hover{
-  background:rgba(255,255,255,0.24);
-}
-
-.grid-chamados{
+/* GRID */
+.cards{
   display:grid;
-  grid-template-columns:repeat(auto-fit, minmax(300px, 1fr));
+  grid-template-columns:repeat(auto-fit,minmax(300px,1fr));
   gap:18px;
 }
 
+/* CARD */
 .card{
-  background:var(--branco);
-  border:1px solid var(--cinza-borda);
-  border-radius:20px;
-  box-shadow:var(--sombra);
+  background:white;
   padding:20px;
+  border-radius:18px;
+  box-shadow:0 10px 25px rgba(15,23,42,0.08);
+  border:1px solid #dbe2ea;
   position:relative;
   overflow:hidden;
 }
@@ -226,46 +217,49 @@ input:focus, select:focus{
   left:0;
   width:100%;
   height:5px;
-  background:linear-gradient(90deg, var(--azul), #60a5fa);
+  background:linear-gradient(90deg,#2563eb,#60a5fa);
 }
 
 .card h3{
-  font-size:23px;
   margin-bottom:10px;
-  color:#0f172a;
+  font-size:24px;
 }
 
-.desc{
-  color:var(--cinza-texto);
+.card .desc{
+  color:#64748b;
   margin-bottom:16px;
+  min-height:42px;
   line-height:1.5;
-  min-height:48px;
 }
 
-.info{
-  display:grid;
-  gap:8px;
-  margin-bottom:16px;
+.card p{
+  margin:6px 0;
 }
 
-.info p{
-  color:#0f172a;
-  font-size:15px;
-}
-
-.info span{
-  color:var(--cinza-texto);
-  font-weight:500;
+.card p span{
+  color:#64748b;
 }
 
 .footer-card{
   display:flex;
   justify-content:space-between;
   align-items:center;
-  flex-wrap:wrap;
   gap:12px;
-  margin-top:8px;
+  flex-wrap:wrap;
+  margin-top:14px;
 }
+
+.status{
+  display:inline-flex;
+  padding:8px 14px;
+  border-radius:999px;
+  font-size:13px;
+  font-weight:800;
+}
+
+.aberto{background:#dbeafe;color:#1d4ed8;}
+.emandamento{background:#fef3c7;color:#a16207;}
+.concluido{background:#dcfce7;color:#15803d;}
 
 .acoes{
   display:flex;
@@ -273,51 +267,68 @@ input:focus, select:focus{
   flex-wrap:wrap;
 }
 
-.status{
-  display:inline-flex;
+.empty{
+  grid-column:1/-1;
+  background:white;
+  border:1px dashed #cbd5e1;
+  border-radius:18px;
+  padding:40px 20px;
+  text-align:center;
+  color:#64748b;
+}
+
+/* MODAL */
+.modal{
+  position:fixed;
+  inset:0;
+  background:rgba(15,23,42,0.5);
+  display:none;
   align-items:center;
   justify-content:center;
-  padding:8px 14px;
-  border-radius:999px;
-  font-size:13px;
-  font-weight:700;
+  padding:20px;
+  z-index:1000;
 }
 
-.aberto{
-  background:var(--azul-claro);
-  color:#1d4ed8;
+.modal.show{
+  display:flex;
 }
 
-.emandamento{
-  background:var(--amarelo-claro);
-  color:#a16207;
+.modal-box{
+  width:100%;
+  max-width:520px;
+  background:white;
+  border-radius:22px;
+  box-shadow:0 25px 60px rgba(0,0,0,0.25);
+  padding:24px;
+  animation:subir .25s ease;
 }
 
-.fechado{
-  background:var(--verde-claro);
-  color:#15803d;
+.modal-box h3{
+  font-size:28px;
+  margin-bottom:6px;
 }
 
-.concluído,
-.concluido{
-  background:var(--verde-claro);
-  color:#15803d;
+.modal-box .sub{
+  color:#64748b;
+  margin-bottom:18px;
 }
 
-.empty{
-  background:var(--branco);
-  border:1px dashed #cbd5e1;
-  border-radius:20px;
-  box-shadow:var(--sombra);
-  padding:50px 20px;
-  text-align:center;
-  color:var(--cinza-texto);
+.form-grid{
+  display:grid;
+  gap:12px;
 }
 
-.empty h3{
-  color:#0f172a;
-  margin-bottom:8px;
-  font-size:24px;
+textarea{
+  min-height:110px;
+  resize:vertical;
+}
+
+.modal-actions{
+  display:flex;
+  justify-content:flex-end;
+  gap:10px;
+  margin-top:18px;
+  flex-wrap:wrap;
 }
 
 .toast{
@@ -328,26 +339,21 @@ input:focus, select:focus{
   border-radius:12px;
   color:white;
   font-weight:700;
-  box-shadow:var(--sombra);
-  z-index:9999;
-  animation:fadeIn .25s ease;
+  z-index:1100;
+  box-shadow:0 10px 25px rgba(15,23,42,0.18);
 }
 
-.success{background:var(--verde);}
-.error{background:var(--vermelho);}
+.success{background:#16a34a;}
+.error{background:#dc2626;}
 
-@keyframes fadeIn{
-  from{opacity:0; transform:translateY(-10px);}
-  to{opacity:1; transform:translateY(0);}
+@keyframes subir{
+  from{opacity:0;transform:translateY(12px);}
+  to{opacity:1;transform:translateY(0);}
 }
 
 @media (max-width:900px){
   .stats{
-    grid-template-columns:repeat(2, 1fr);
-  }
-
-  .header-left h1{
-    font-size:28px;
+    grid-template-columns:repeat(2,1fr);
   }
 }
 
@@ -361,7 +367,7 @@ input:focus, select:focus{
     align-items:stretch;
   }
 
-  #busca, #filtro, .btn{
+  #busca,#filtro,.btn-success{
     width:100%;
   }
 
@@ -369,8 +375,8 @@ input:focus, select:focus{
     padding:20px;
   }
 
-  .header-left h1{
-    font-size:24px;
+  header h2{
+    font-size:21px;
   }
 }
 </style>
@@ -380,88 +386,96 @@ input:focus, select:focus{
 
 <header>
   <div class="header-left">
-    <h1>Painel de Chamados</h1>
-    <p>Acompanhe, filtre e gerencie os chamados do sistema</p>
+    <div class="header-logo">🔐</div>
+    <h2>Controle de Chamados</h2>
   </div>
 
-  <div class="header-right">
+  <div class="top-right">
     <div class="user-badge" id="usuarioInfo">Usuário</div>
-    <button class="btn btn-outline" onclick="logout()">Sair</button>
+    <button onclick="logout()">Sair</button>
   </div>
 </header>
 
 <div class="container">
 
   <div class="stats">
-    <div class="stat-box">
+    <div class="stat">
       <h3>Total de Chamados</h3>
       <p id="statTotal">0</p>
     </div>
-    <div class="stat-box">
+    <div class="stat">
       <h3>Em Aberto</h3>
       <p id="statAberto">0</p>
     </div>
-    <div class="stat-box">
+    <div class="stat">
       <h3>Em Andamento</h3>
       <p id="statAndamento">0</p>
     </div>
-    <div class="stat-box">
-      <h3>Finalizados</h3>
-      <p id="statFechado">0</p>
+    <div class="stat">
+      <h3>Concluídos</h3>
+      <p id="statConcluido">0</p>
     </div>
   </div>
 
-  <div class="controls-box">
+  <div class="toolbar">
     <div class="controls">
-      <button class="btn btn-success" onclick="novo()">+ Novo Chamado</button>
+      <button class="btn btn-success" onclick="abrirNovo()">+ Novo Chamado</button>
       <input id="busca" placeholder="Buscar por título..." oninput="render()">
       <select id="filtro" onchange="render()">
         <option value="">Todos os status</option>
         <option value="Aberto">Aberto</option>
         <option value="Em andamento">Em andamento</option>
-        <option value="Fechado">Fechado</option>
         <option value="Concluído">Concluído</option>
       </select>
     </div>
   </div>
 
-  <div id="lista" class="grid-chamados"></div>
+  <div id="lista" class="cards"></div>
+</div>
 
+<div id="modal" class="modal">
+  <div class="modal-box">
+    <h3 id="modalTitulo">Novo Chamado</h3>
+    <p class="sub" id="modalSub">Preencha as informações abaixo.</p>
+
+    <div class="form-grid">
+      <input type="hidden" id="chamadoId">
+
+      <input id="titulo" type="text" placeholder="Título do chamado">
+      <input id="morador" type="text" placeholder="Nome do morador">
+      <input id="local" type="text" placeholder="Local do problema">
+
+      <select id="status">
+        <option value="Aberto">Aberto</option>
+        <option value="Em andamento">Em andamento</option>
+        <option value="Concluído">Concluído</option>
+      </select>
+
+      <textarea id="descricao" placeholder="Descrição do chamado"></textarea>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="fecharModal()">Cancelar</button>
+      <button class="btn btn-success" onclick="salvarChamado()">Salvar</button>
+    </div>
+  </div>
 </div>
 
 <script>
 const API = "https://backend-chamados-production.up.railway.app";
+
+let usuario = JSON.parse(localStorage.getItem("usuario"));
 let chamados = [];
-
-let usuario = null;
-
-try {
-  usuario =
-    JSON.parse(localStorage.getItem("usuario")) ||
-    JSON.parse(localStorage.getItem("usuarioLogado"));
-} catch (e) {
-  console.error("Erro ao ler localStorage:", e);
-}
+let editando = false;
 
 if (!usuario) {
-  window.location.href = "index.html";
-}
-
-if (usuario) {
-  usuario.usuario_id =
-    usuario.usuario_id ?? usuario.id ?? usuario.id_usuario ?? usuario.usuarioId;
-
-  usuario.tipo_usuario =
-    usuario.tipo_usuario ?? usuario.tipo ?? usuario.perfil ?? usuario.tipoUser;
-
-  usuario.nome_exibicao =
-    usuario.nome ?? usuario.login ?? usuario.usuario ?? "Usuário";
+  location.href = "index.html";
 }
 
 document.getElementById("usuarioInfo").innerText =
-  `${usuario.nome_exibicao} • ${usuario.tipo_usuario}`;
+  `${usuario.nome || usuario.login || "Usuário"} • ${usuario.tipo_usuario}`;
 
-function toast(msg, type = "success") {
+function toast(msg, type = "success"){
   const t = document.createElement("div");
   t.className = "toast " + type;
   t.innerText = msg;
@@ -469,45 +483,36 @@ function toast(msg, type = "success") {
   setTimeout(() => t.remove(), 3000);
 }
 
-function atualizarEstatisticas(lista) {
-  const total = lista.length;
-  const aberto = lista.filter(c => c.status_chamado === "Aberto").length;
-  const andamento = lista.filter(c => c.status_chamado === "Em andamento").length;
-  const fechado = lista.filter(c =>
-    c.status_chamado === "Fechado" || c.status_chamado === "Concluído"
-  ).length;
-
-  document.getElementById("statTotal").innerText = total;
-  document.getElementById("statAberto").innerText = aberto;
-  document.getElementById("statAndamento").innerText = andamento;
-  document.getElementById("statFechado").innerText = fechado;
+function formatarClasse(status){
+  return status
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g,"")
+    .replace(/\s+/g,"")
+    .toLowerCase();
 }
 
-async function carregar() {
-  try {
-    const url = `${API}/chamados?usuario_id=${usuario.usuario_id}&tipo_usuario=${encodeURIComponent(usuario.tipo_usuario)}`;
-    const res = await fetch(url);
-    const texto = await res.text();
-
-    try {
-      chamados = JSON.parse(texto);
-    } catch {
-      chamados = [];
-      toast("Erro ao carregar chamados", "error");
-      return;
-    }
-
-    if (!Array.isArray(chamados)) chamados = [];
-
-    atualizarEstatisticas(chamados);
-    render();
-  } catch (error) {
-    console.error(error);
-    toast("Erro ao conectar com o servidor", "error");
-  }
+function atualizarStats(){
+  document.getElementById("statTotal").innerText = chamados.length;
+  document.getElementById("statAberto").innerText =
+    chamados.filter(c => c.status_chamado === "Aberto").length;
+  document.getElementById("statAndamento").innerText =
+    chamados.filter(c => c.status_chamado === "Em andamento").length;
+  document.getElementById("statConcluido").innerText =
+    chamados.filter(c => c.status_chamado === "Concluído").length;
 }
 
-function render() {
+function carregar(){
+  fetch(`${API}/chamados?usuario_id=${usuario.usuario_id}&tipo_usuario=${usuario.tipo_usuario}`)
+    .then(r => r.json())
+    .then(data => {
+      chamados = Array.isArray(data) ? data : [];
+      atualizarStats();
+      render();
+    })
+    .catch(() => toast("Erro ao carregar chamados", "error"));
+}
+
+function render(){
   const lista = document.getElementById("lista");
   const busca = document.getElementById("busca").value.toLowerCase();
   const filtro = document.getElementById("filtro").value;
@@ -518,47 +523,36 @@ function render() {
 
   lista.innerHTML = "";
 
-  if (filtrados.length === 0) {
+  if (!filtrados.length){
     lista.innerHTML = `
-      <div class="empty" style="grid-column:1/-1;">
+      <div class="empty">
         <h3>Nenhum chamado encontrado</h3>
-        <p>Tente alterar o filtro, pesquisar outro termo ou criar um novo chamado.</p>
+        <p>Tente outro filtro ou crie um novo chamado.</p>
       </div>
     `;
     return;
   }
 
   filtrados.forEach(c => {
-    const statusBloqueado =
-      c.status_chamado === "Fechado" || c.status_chamado === "Concluído";
-
+    const statusBloqueado = c.status_chamado === "Concluído" || c.status_chamado === "Fechado";
     const podeEditar = usuario.tipo_usuario === "admin" && !statusBloqueado;
-
-    const classeStatus = String(c.status_chamado || "")
-      .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "")
-      .replace(/\s+/g, "")
-      .toLowerCase();
 
     lista.innerHTML += `
       <div class="card">
-        <h3>${c.titulo || ""}</h3>
-
+        <h3>${c.titulo}</h3>
         <p class="desc">${c.descricao || "Sem descrição informada."}</p>
 
-        <div class="info">
-          <p><strong>Morador:</strong> <span>${c.morador || "-"}</span></p>
-          <p><strong>Local:</strong> <span>${c.local_chamado || "-"}</span></p>
-        </div>
+        <p><b>Morador:</b> <span>${c.morador}</span></p>
+        <p><b>Local:</b> <span>${c.local_chamado}</span></p>
 
         <div class="footer-card">
-          <span class="status ${classeStatus}">
-            ${c.status_chamado || "Sem status"}
+          <span class="status ${formatarClasse(c.status_chamado === 'Fechado' ? 'Concluído' : c.status_chamado)}">
+            ${c.status_chamado === 'Fechado' ? 'Concluído' : c.status_chamado}
           </span>
 
           ${podeEditar ? `
             <div class="acoes">
-              <button class="btn btn-warning" onclick="editar(${c.chamado_id})">Editar</button>
+              <button class="btn btn-warning" onclick="abrirEditar(${c.chamado_id})">Editar</button>
               <button class="btn btn-danger" onclick="excluir(${c.chamado_id})">Excluir</button>
             </div>
           ` : ""}
@@ -568,95 +562,140 @@ function render() {
   });
 }
 
-async function novo() {
-  const titulo = prompt("Título do chamado:");
-  const morador = prompt("Nome do morador:");
-  const local = prompt("Local do problema:");
-  const descricao = prompt("Descrição do chamado:");
+function limparFormulario(){
+  document.getElementById("chamadoId").value = "";
+  document.getElementById("titulo").value = "";
+  document.getElementById("morador").value = "";
+  document.getElementById("local").value = "";
+  document.getElementById("descricao").value = "";
+  document.getElementById("status").value = "Aberto";
+}
 
-  if (!titulo || !morador || !local) {
+function abrirNovo(){
+  editando = false;
+  limparFormulario();
+  document.getElementById("modalTitulo").innerText = "Novo Chamado";
+  document.getElementById("modalSub").innerText = "Preencha as informações abaixo.";
+  document.getElementById("status").disabled = true;
+  document.getElementById("modal").classList.add("show");
+}
+
+function abrirEditar(id){
+  const chamado = chamados.find(c => c.chamado_id === id);
+  if (!chamado) return;
+
+  editando = true;
+  document.getElementById("chamadoId").value = chamado.chamado_id;
+  document.getElementById("titulo").value = chamado.titulo || "";
+  document.getElementById("morador").value = chamado.morador || "";
+  document.getElementById("local").value = chamado.local_chamado || "";
+  document.getElementById("descricao").value = chamado.descricao || "";
+  document.getElementById("status").value =
+    chamado.status_chamado === "Fechado" ? "Concluído" : (chamado.status_chamado || "Aberto");
+
+  document.getElementById("modalTitulo").innerText = "Editar Chamado";
+  document.getElementById("modalSub").innerText = "Atualize as informações do chamado.";
+  document.getElementById("status").disabled = false;
+  document.getElementById("modal").classList.add("show");
+}
+
+function fecharModal(){
+  document.getElementById("modal").classList.remove("show");
+}
+
+function salvarChamado(){
+  const id = document.getElementById("chamadoId").value;
+  const titulo = document.getElementById("titulo").value.trim();
+  const morador = document.getElementById("morador").value.trim();
+  const local = document.getElementById("local").value.trim();
+  const descricao = document.getElementById("descricao").value.trim();
+  const status = document.getElementById("status").value;
+
+  if (!titulo || !morador || !local){
     toast("Preencha os campos obrigatórios", "error");
     return;
   }
 
-  try {
-    await fetch(`${API}/chamados`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
+  if (!editando){
+    fetch(`${API}/chamados`, {
+      method:"POST",
+      headers:{ "Content-Type":"application/json" },
+      body:JSON.stringify({
         titulo,
         morador,
         local_chamado: local,
-        status_chamado: "Aberto",
         descricao,
         usuario_id: usuario.usuario_id
       })
-    });
-
-    toast("Chamado criado com sucesso");
-    carregar();
-  } catch (error) {
-    console.error(error);
-    toast("Erro ao criar chamado", "error");
-  }
-}
-
-async function editar(id) {
-  const titulo = prompt("Novo título:");
-  const status = prompt("Status: Aberto / Em andamento / Fechado / Concluído");
-
-  if (!titulo || !status) {
-    toast("Preencha os campos para editar", "error");
-    return;
-  }
-
-  try {
-    await fetch(`${API}/chamados/${id}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
+    })
+    .then(r => r.json())
+    .then(data => {
+      if (data.erro){
+        toast(data.erro, "error");
+        return;
+      }
+      toast("Chamado criado com sucesso");
+      fecharModal();
+      carregar();
+    })
+    .catch(() => toast("Erro ao criar chamado", "error"));
+  } else {
+    fetch(`${API}/chamados/${id}`, {
+      method:"PUT",
+      headers:{ "Content-Type":"application/json" },
+      body:JSON.stringify({
         titulo,
-        morador: "-",
-        local_chamado: "-",
         status_chamado: status,
-        descricao: "",
         tipo_usuario: usuario.tipo_usuario
       })
-    });
-
-    toast("Chamado atualizado com sucesso");
-    carregar();
-  } catch (error) {
-    console.error(error);
-    toast("Erro ao atualizar chamado", "error");
+    })
+    .then(r => r.json())
+    .then(data => {
+      if (data.erro){
+        toast(data.erro, "error");
+        return;
+      }
+      toast("Chamado atualizado com sucesso");
+      fecharModal();
+      carregar();
+    })
+    .catch(() => toast("Erro ao atualizar chamado", "error"));
   }
 }
 
-async function excluir(id) {
-  if (!confirm("Deseja realmente excluir este chamado?")) return;
+function excluir(id){
+  if (!confirm("Excluir este chamado?")) return;
 
-  try {
-    await fetch(`${API}/chamados/${id}`, {
-      method: "DELETE",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        tipo_usuario: usuario.tipo_usuario
-      })
-    });
-
+  fetch(`${API}/chamados/${id}`, {
+    method:"DELETE",
+    headers:{ "Content-Type":"application/json" },
+    body:JSON.stringify({
+      tipo_usuario: usuario.tipo_usuario
+    })
+  })
+  .then(r => r.json())
+  .then(data => {
+    if (data.erro){
+      toast(data.erro, "error");
+      return;
+    }
     toast("Chamado excluído com sucesso");
     carregar();
-  } catch (error) {
-    console.error(error);
-    toast("Erro ao excluir chamado", "error");
-  }
+  })
+  .catch(() => toast("Erro ao excluir chamado", "error"));
 }
 
-function logout() {
-  localStorage.removeItem("usuario");
-  localStorage.removeItem("usuarioLogado");
-  window.location.href = "index.html";
+function logout(){
+  localStorage.clear();
+  location.href = "index.html";
 }
+
+window.addEventListener("click", (e) => {
+  const modal = document.getElementById("modal");
+  if (e.target === modal){
+    fecharModal();
+  }
+});
 
 carregar();
 </script>
