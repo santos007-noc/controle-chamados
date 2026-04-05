@@ -18,7 +18,6 @@ body{
   color:#0f172a;
 }
 
-/* HEADER */
 header{
   background:linear-gradient(135deg,#1e3a8a,#2563eb);
   color:white;
@@ -78,17 +77,15 @@ header button{
   font-weight:700;
 }
 
-/* CONTAINER */
 .container{
-  max-width:1200px;
+  max-width:1280px;
   margin:24px auto;
   padding:0 20px 30px;
 }
 
-/* STATS */
 .stats{
   display:grid;
-  grid-template-columns:repeat(4,1fr);
+  grid-template-columns:repeat(5,1fr);
   gap:14px;
   margin-bottom:18px;
 }
@@ -112,7 +109,31 @@ header button{
   font-weight:800;
 }
 
-/* TOOLBAR */
+.tabs{
+  display:flex;
+  gap:12px;
+  margin-bottom:18px;
+  flex-wrap:wrap;
+}
+
+.tab-btn{
+  border:none;
+  border-radius:12px;
+  padding:12px 16px;
+  cursor:pointer;
+  font-weight:700;
+  background:white;
+  color:#0f172a;
+  border:1px solid #dbe2ea;
+  box-shadow:0 10px 25px rgba(15,23,42,0.06);
+}
+
+.tab-btn.active{
+  background:#2563eb;
+  color:white;
+  border-color:#2563eb;
+}
+
 .toolbar{
   background:white;
   border:1px solid #dbe2ea;
@@ -145,13 +166,24 @@ input:focus, select:focus, textarea:focus{
 }
 
 #busca{
-  min-width:260px;
+  min-width:240px;
   flex:1;
   height:48px;
 }
 
 #filtro{
   min-width:180px;
+  height:48px;
+}
+
+#filtroUsuario{
+  min-width:220px;
+  height:48px;
+}
+
+#buscaUsuario{
+  min-width:240px;
+  flex:1;
   height:48px;
 }
 
@@ -192,14 +224,12 @@ input:focus, select:focus, textarea:focus{
   padding:10px 14px;
 }
 
-/* GRID */
 .cards{
   display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(300px,1fr));
+  grid-template-columns:repeat(auto-fit,minmax(320px,1fr));
   gap:18px;
 }
 
-/* CARD */
 .card{
   background:white;
   padding:20px;
@@ -268,7 +298,6 @@ input:focus, select:focus, textarea:focus{
 }
 
 .empty{
-  grid-column:1/-1;
   background:white;
   border:1px dashed #cbd5e1;
   border-radius:18px;
@@ -277,7 +306,55 @@ input:focus, select:focus, textarea:focus{
   color:#64748b;
 }
 
-/* MODAL */
+.list-users{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+  gap:18px;
+}
+
+.user-card{
+  background:white;
+  padding:20px;
+  border-radius:18px;
+  box-shadow:0 10px 25px rgba(15,23,42,0.08);
+  border:1px solid #dbe2ea;
+}
+
+.user-card h3{
+  font-size:21px;
+  margin-bottom:8px;
+}
+
+.badge-role{
+  display:inline-flex;
+  margin-top:10px;
+  padding:8px 14px;
+  border-radius:999px;
+  font-size:13px;
+  font-weight:800;
+}
+
+.badge-admin{
+  background:#dbeafe;
+  color:#1d4ed8;
+}
+
+.badge-cliente{
+  background:#dcfce7;
+  color:#15803d;
+}
+
+.user-actions{
+  margin-top:14px;
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+}
+
+.hidden{
+  display:none !important;
+}
+
 .modal{
   position:fixed;
   inset:0;
@@ -351,7 +428,13 @@ textarea{
   to{opacity:1;transform:translateY(0);}
 }
 
-@media (max-width:900px){
+@media (max-width:1100px){
+  .stats{
+    grid-template-columns:repeat(3,1fr);
+  }
+}
+
+@media (max-width:800px){
   .stats{
     grid-template-columns:repeat(2,1fr);
   }
@@ -367,7 +450,7 @@ textarea{
     align-items:stretch;
   }
 
-  #busca,#filtro,.btn-success{
+  #busca,#filtro,#filtroUsuario,#buscaUsuario,.btn-success{
     width:100%;
   }
 
@@ -415,22 +498,44 @@ textarea{
       <h3>Concluídos</h3>
       <p id="statConcluido">0</p>
     </div>
-  </div>
-
-  <div class="toolbar">
-    <div class="controls">
-      <button class="btn btn-success" onclick="abrirNovo()">+ Novo Chamado</button>
-      <input id="busca" placeholder="Buscar por título..." oninput="render()">
-      <select id="filtro" onchange="render()">
-        <option value="">Todos os status</option>
-        <option value="Aberto">Aberto</option>
-        <option value="Em andamento">Em andamento</option>
-        <option value="Concluído">Concluído</option>
-      </select>
+    <div class="stat">
+      <h3>Total de Usuários</h3>
+      <p id="statUsuarios">0</p>
     </div>
   </div>
 
-  <div id="lista" class="cards"></div>
+  <div class="tabs">
+    <button class="tab-btn active" id="btnTabChamados" onclick="trocarAba('chamados')">Chamados</button>
+    <button class="tab-btn hidden" id="btnTabUsuarios" onclick="trocarAba('usuarios')">Usuários</button>
+  </div>
+
+  <section id="secaoChamados">
+    <div class="toolbar">
+      <div class="controls">
+        <button class="btn btn-success" onclick="abrirNovo()">+ Novo Chamado</button>
+        <input id="busca" placeholder="Buscar por título..." oninput="renderChamados()">
+        <select id="filtro" onchange="renderChamados()">
+          <option value="">Todos os status</option>
+          <option value="Aberto">Aberto</option>
+          <option value="Em andamento">Em andamento</option>
+          <option value="Concluído">Concluído</option>
+        </select>
+        <select id="filtroUsuario" class="hidden" onchange="renderChamados()"></select>
+      </div>
+    </div>
+
+    <div id="listaChamados" class="cards"></div>
+  </section>
+
+  <section id="secaoUsuarios" class="hidden">
+    <div class="toolbar">
+      <div class="controls">
+        <input id="buscaUsuario" placeholder="Buscar usuário por nome ou login..." oninput="renderUsuarios()">
+      </div>
+    </div>
+
+    <div id="listaUsuarios" class="list-users"></div>
+  </section>
 </div>
 
 <div id="modal" class="modal">
@@ -440,17 +545,14 @@ textarea{
 
     <div class="form-grid">
       <input type="hidden" id="chamadoId">
-
       <input id="titulo" type="text" placeholder="Título do chamado">
       <input id="morador" type="text" placeholder="Nome do morador">
       <input id="local" type="text" placeholder="Local do problema">
-
       <select id="status">
         <option value="Aberto">Aberto</option>
         <option value="Em andamento">Em andamento</option>
         <option value="Concluído">Concluído</option>
       </select>
-
       <textarea id="descricao" placeholder="Descrição do chamado"></textarea>
     </div>
 
@@ -466,7 +568,9 @@ const API = "https://backend-chamados-production.up.railway.app";
 
 let usuario = JSON.parse(localStorage.getItem("usuario"));
 let chamados = [];
+let usuarios = [];
 let editando = false;
+let abaAtual = "chamados";
 
 if (!usuario) {
   location.href = "index.html";
@@ -474,6 +578,11 @@ if (!usuario) {
 
 document.getElementById("usuarioInfo").innerText =
   `${usuario.nome || usuario.login || "Usuário"} • ${usuario.tipo_usuario}`;
+
+if (usuario.tipo_usuario === "admin") {
+  document.getElementById("btnTabUsuarios").classList.remove("hidden");
+  document.getElementById("filtroUsuario").classList.remove("hidden");
+}
 
 function toast(msg, type = "success"){
   const t = document.createElement("div");
@@ -491,6 +600,16 @@ function formatarClasse(status){
     .toLowerCase();
 }
 
+function trocarAba(aba){
+  abaAtual = aba;
+
+  document.getElementById("secaoChamados").classList.toggle("hidden", aba !== "chamados");
+  document.getElementById("secaoUsuarios").classList.toggle("hidden", aba !== "usuarios");
+
+  document.getElementById("btnTabChamados").classList.toggle("active", aba === "chamados");
+  document.getElementById("btnTabUsuarios").classList.toggle("active", aba === "usuarios");
+}
+
 function atualizarStats(){
   document.getElementById("statTotal").innerText = chamados.length;
   document.getElementById("statAberto").innerText =
@@ -498,28 +617,71 @@ function atualizarStats(){
   document.getElementById("statAndamento").innerText =
     chamados.filter(c => c.status_chamado === "Em andamento").length;
   document.getElementById("statConcluido").innerText =
-    chamados.filter(c => c.status_chamado === "Concluído").length;
+    chamados.filter(c => c.status_chamado === "Concluído" || c.status_chamado === "Fechado").length;
+  document.getElementById("statUsuarios").innerText =
+    usuario.tipo_usuario === "admin" ? usuarios.length : "-";
 }
 
-function carregar(){
-  fetch(`${API}/chamados?usuario_id=${usuario.usuario_id}&tipo_usuario=${usuario.tipo_usuario}`)
+function preencherFiltroUsuarios(){
+  const filtro = document.getElementById("filtroUsuario");
+  if (usuario.tipo_usuario !== "admin") return;
+
+  const opcoes = usuarios
+    .map(u => `<option value="${u.usuario_id}">${u.nome} (${u.login})</option>`)
+    .join("");
+
+  filtro.innerHTML = `<option value="">Todos os usuários</option>${opcoes}`;
+}
+
+function carregarChamados(){
+  return fetch(`${API}/chamados?usuario_id=${usuario.usuario_id}&tipo_usuario=${usuario.tipo_usuario}`)
     .then(r => r.json())
     .then(data => {
       chamados = Array.isArray(data) ? data : [];
-      atualizarStats();
-      render();
-    })
-    .catch(() => toast("Erro ao carregar chamados", "error"));
+    });
 }
 
-function render(){
-  const lista = document.getElementById("lista");
+function carregarUsuarios(){
+  if (usuario.tipo_usuario !== "admin") {
+    usuarios = [];
+    atualizarStats();
+    return Promise.resolve();
+  }
+
+  return fetch(`${API}/usuarios?tipo_usuario=${usuario.tipo_usuario}`)
+    .then(r => r.json())
+    .then(data => {
+      usuarios = Array.isArray(data) ? data : [];
+      preencherFiltroUsuarios();
+    })
+    .catch(() => {
+      usuarios = [];
+      toast("Erro ao carregar usuários", "error");
+    });
+}
+
+function carregarTudo(){
+  Promise.all([carregarChamados(), carregarUsuarios()])
+    .then(() => {
+      atualizarStats();
+      renderChamados();
+      renderUsuarios();
+    })
+    .catch(() => toast("Erro ao carregar dados", "error"));
+}
+
+function renderChamados(){
+  const lista = document.getElementById("listaChamados");
   const busca = document.getElementById("busca").value.toLowerCase();
   const filtro = document.getElementById("filtro").value;
+  const filtroUsuario = usuario.tipo_usuario === "admin"
+    ? document.getElementById("filtroUsuario").value
+    : "";
 
   const filtrados = chamados
     .filter(c => (c.titulo || "").toLowerCase().includes(busca))
-    .filter(c => !filtro || c.status_chamado === filtro);
+    .filter(c => !filtro || (c.status_chamado === filtro || (filtro === "Concluído" && c.status_chamado === "Fechado")))
+    .filter(c => !filtroUsuario || String(c.usuario_id) === String(filtroUsuario));
 
   lista.innerHTML = "";
 
@@ -534,29 +696,78 @@ function render(){
   }
 
   filtrados.forEach(c => {
-    const statusBloqueado = c.status_chamado === "Concluído" || c.status_chamado === "Fechado";
-    const podeEditar = usuario.tipo_usuario === "admin" && !statusBloqueado;
+    const concluido = c.status_chamado === "Concluído" || c.status_chamado === "Fechado";
+    const podeEditar = usuario.tipo_usuario === "admin" && !concluido;
 
     lista.innerHTML += `
       <div class="card">
         <h3>${c.titulo}</h3>
         <p class="desc">${c.descricao || "Sem descrição informada."}</p>
 
+        <p><b>ID:</b> <span>#${c.chamado_id}</span></p>
         <p><b>Morador:</b> <span>${c.morador}</span></p>
         <p><b>Local:</b> <span>${c.local_chamado}</span></p>
+        <p><b>Criado por:</b> <span>${c.nome_usuario || "Usuário"}${c.login_usuario ? ` (${c.login_usuario})` : ""}</span></p>
 
         <div class="footer-card">
-          <span class="status ${formatarClasse(c.status_chamado === 'Fechado' ? 'Concluído' : c.status_chamado)}">
-            ${c.status_chamado === 'Fechado' ? 'Concluído' : c.status_chamado}
+          <span class="status ${formatarClasse(concluido ? 'Concluído' : c.status_chamado)}">
+            ${concluido ? 'Concluído' : c.status_chamado}
           </span>
 
           ${podeEditar ? `
             <div class="acoes">
               <button class="btn btn-warning" onclick="abrirEditar(${c.chamado_id})">Editar</button>
-              <button class="btn btn-danger" onclick="excluir(${c.chamado_id})">Excluir</button>
+              <button class="btn btn-danger" onclick="excluirChamado(${c.chamado_id})">Excluir</button>
             </div>
           ` : ""}
         </div>
+      </div>
+    `;
+  });
+}
+
+function renderUsuarios(){
+  const lista = document.getElementById("listaUsuarios");
+  if (usuario.tipo_usuario !== "admin") return;
+
+  const busca = document.getElementById("buscaUsuario").value.toLowerCase();
+
+  const filtrados = usuarios.filter(u =>
+    (u.nome || "").toLowerCase().includes(busca) ||
+    (u.login || "").toLowerCase().includes(busca)
+  );
+
+  lista.innerHTML = "";
+
+  if (!filtrados.length){
+    lista.innerHTML = `
+      <div class="empty">
+        <h3>Nenhum usuário encontrado</h3>
+        <p>Tente outro termo de busca.</p>
+      </div>
+    `;
+    return;
+  }
+
+  filtrados.forEach(u => {
+    const ehAdmin = u.tipo_usuario === "admin";
+    const souEu = Number(u.usuario_id) === Number(usuario.usuario_id);
+    const podeExcluir = !ehAdmin && !souEu;
+
+    lista.innerHTML += `
+      <div class="user-card">
+        <h3>${u.nome}</h3>
+        <p><b>ID:</b> <span>${u.usuario_id}</span></p>
+        <p><b>Login:</b> <span>${u.login}</span></p>
+        <span class="badge-role ${ehAdmin ? 'badge-admin' : 'badge-cliente'}">
+          ${ehAdmin ? 'Administrador' : 'Cliente'}
+        </span>
+
+        ${podeExcluir ? `
+          <div class="user-actions">
+            <button class="btn btn-danger" onclick="excluirUsuario(${u.usuario_id})">Excluir usuário</button>
+          </div>
+        ` : ""}
       </div>
     `;
   });
@@ -636,7 +847,7 @@ function salvarChamado(){
       }
       toast("Chamado criado com sucesso");
       fecharModal();
-      carregar();
+      carregarTudo();
     })
     .catch(() => toast("Erro ao criar chamado", "error"));
   } else {
@@ -657,13 +868,13 @@ function salvarChamado(){
       }
       toast("Chamado atualizado com sucesso");
       fecharModal();
-      carregar();
+      carregarTudo();
     })
     .catch(() => toast("Erro ao atualizar chamado", "error"));
   }
 }
 
-function excluir(id){
+function excluirChamado(id){
   if (!confirm("Excluir este chamado?")) return;
 
   fetch(`${API}/chamados/${id}`, {
@@ -680,9 +891,32 @@ function excluir(id){
       return;
     }
     toast("Chamado excluído com sucesso");
-    carregar();
+    carregarTudo();
   })
   .catch(() => toast("Erro ao excluir chamado", "error"));
+}
+
+function excluirUsuario(id){
+  if (!confirm("Excluir este usuário?")) return;
+
+  fetch(`${API}/usuarios/${id}`, {
+    method:"DELETE",
+    headers:{ "Content-Type":"application/json" },
+    body:JSON.stringify({
+      tipo_usuario: usuario.tipo_usuario,
+      usuario_id: usuario.usuario_id
+    })
+  })
+  .then(r => r.json())
+  .then(data => {
+    if (data.erro){
+      toast(data.erro, "error");
+      return;
+    }
+    toast("Usuário excluído com sucesso");
+    carregarTudo();
+  })
+  .catch(() => toast("Erro ao excluir usuário", "error"));
 }
 
 function logout(){
@@ -697,7 +931,7 @@ window.addEventListener("click", (e) => {
   }
 });
 
-carregar();
+carregarTudo();
 </script>
 
 </body>
