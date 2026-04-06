@@ -292,7 +292,7 @@ input:focus, select:focus, textarea:focus{
   height:48px;
 }
 
-#filtro, #filtroUsuario{
+#filtro, #filtroUsuario, #filtroPrioridade{
   min-width:190px;
   height:48px;
 }
@@ -425,6 +425,21 @@ input:focus, select:focus, textarea:focus{
   color:var(--success);
 }
 
+.prioridade-alta{
+  color:#dc2626 !important;
+  font-weight:700;
+}
+
+.prioridade-media{
+  color:#f59e0b !important;
+  font-weight:700;
+}
+
+.prioridade-baixa{
+  color:#16a34a !important;
+  font-weight:700;
+}
+
 .acoes{
   display:flex;
   gap:10px;
@@ -513,6 +528,8 @@ input:focus, select:focus, textarea:focus{
 .modal-box{
   width:100%;
   max-width:560px;
+  max-height:88vh;
+  overflow-y:auto;
   background:var(--card);
   border-radius:22px;
   box-shadow:0 25px 60px rgba(0,0,0,0.25);
@@ -537,7 +554,7 @@ input:focus, select:focus, textarea:focus{
 }
 
 textarea{
-  min-height:110px;
+  min-height:70px;
   resize:vertical;
 }
 
@@ -547,6 +564,10 @@ textarea{
   gap:10px;
   margin-top:18px;
   flex-wrap:wrap;
+  position:sticky;
+  bottom:0;
+  background:var(--card);
+  padding-top:12px;
 }
 
 .toast{
@@ -616,7 +637,7 @@ textarea{
     align-items:stretch;
   }
 
-  #busca,#filtro,#filtroUsuario,#buscaUsuario,#buscaAgenda,#buscaProfissional{
+  #busca,#filtro,#filtroUsuario,#filtroPrioridade,#buscaUsuario,#buscaAgenda,#buscaProfissional{
     width:100%;
   }
 
@@ -746,6 +767,12 @@ textarea{
             <option value="Em andamento">Em andamento</option>
             <option value="Concluído">Concluído</option>
           </select>
+          <select id="filtroPrioridade" onchange="renderChamados()">
+            <option value="">Todas as prioridades</option>
+            <option value="Alta">Alta</option>
+            <option value="Média">Média</option>
+            <option value="Baixa">Baixa</option>
+          </select>
           <select id="filtroUsuario" class="hidden" onchange="renderChamados()"></select>
         </div>
       </div>
@@ -792,21 +819,38 @@ textarea{
 
     <div class="form-grid">
       <input type="hidden" id="chamadoId">
-      <input id="titulo" type="text" placeholder="Título do chamado">
-      <input id="morador" type="text" placeholder="Nome do morador">
-      <input id="local" type="text" placeholder="Local do problema">
+      <input id="titulo" type="text" placeholder="Título do chamado" maxlength="120">
+      <input id="morador" type="text" placeholder="Nome do morador" maxlength="120">
+      <input id="local" type="text" placeholder="Local do problema" maxlength="120">
       <select id="status">
         <option value="Aberto">Aberto</option>
         <option value="Em andamento">Em andamento</option>
         <option value="Concluído">Concluído</option>
       </select>
+
+      <select id="prioridade">
+        <option value="Baixa">Baixa</option>
+        <option value="Média" selected>Média</option>
+        <option value="Alta">Alta</option>
+      </select>
+
+      <select id="categoria">
+        <option value="">Selecione a categoria</option>
+        <option value="Elétrica">Elétrica</option>
+        <option value="Hidráulica">Hidráulica</option>
+        <option value="Pintura">Pintura</option>
+        <option value="Estrutural">Estrutural</option>
+        <option value="Geral">Geral</option>
+      </select>
+
       <select id="profissional">
         <option value="">Selecione um profissional</option>
       </select>
+
       <input id="dataAgendada" type="date">
       <input id="dataConclusao" type="date">
-      <textarea id="descricao" placeholder="Descrição do chamado"></textarea>
-      <textarea id="observacaoServico" placeholder="Observações do serviço"></textarea>
+      <textarea id="descricao" placeholder="Descrição do chamado" maxlength="500"></textarea>
+      <textarea id="observacaoServico" placeholder="Observações do serviço" maxlength="500"></textarea>
     </div>
 
     <div class="modal-actions">
@@ -876,6 +920,22 @@ function formatarClasse(status){
     .replace(/[\u0300-\u036f]/g,"")
     .replace(/\s+/g,"")
     .toLowerCase();
+}
+
+function classePrioridade(prioridade){
+  if (!prioridade) return "";
+  const valor = prioridade.toLowerCase();
+  if (valor === "alta") return "prioridade-alta";
+  if (valor === "média" || valor === "media") return "prioridade-media";
+  if (valor === "baixa") return "prioridade-baixa";
+  return "";
+}
+
+function formatarData(data){
+  if (!data) return "-";
+  const dataObj = new Date(data);
+  if (isNaN(dataObj.getTime())) return data;
+  return dataObj.toLocaleDateString("pt-BR");
 }
 
 function trocarAba(aba){
@@ -962,7 +1022,7 @@ function renderDashboard(){
     ? recentes.map(c => `
       <div class="simple-item">
         <strong>${c.titulo}</strong>
-        <span>${c.morador} • ${c.status_chamado === 'Fechado' ? 'Concluído' : c.status_chamado}</span>
+        <span>${c.morador} • ${c.status_chamado === 'Fechado' ? 'Concluído' : c.status_chamado} • ${c.prioridade || 'Média'} • ${c.categoria || 'Sem categoria'}</span>
       </div>
     `).join("")
     : `<div class="empty"><p>Nenhum chamado recente.</p></div>`;
@@ -1043,6 +1103,7 @@ function renderChamados(){
   const lista = document.getElementById("listaChamados");
   const busca = document.getElementById("busca").value.toLowerCase();
   const filtro = document.getElementById("filtro").value;
+  const filtroPrioridade = document.getElementById("filtroPrioridade").value;
   const filtroUsuario = usuario.tipo_usuario === "admin"
     ? document.getElementById("filtroUsuario").value
     : "";
@@ -1050,6 +1111,7 @@ function renderChamados(){
   const filtrados = chamados
     .filter(c => (c.titulo || "").toLowerCase().includes(busca))
     .filter(c => !filtro || c.status_chamado === filtro || (filtro === "Concluído" && c.status_chamado === "Fechado"))
+    .filter(c => !filtroPrioridade || c.prioridade === filtroPrioridade)
     .filter(c => !filtroUsuario || String(c.usuario_id) === String(filtroUsuario));
 
   lista.innerHTML = "";
@@ -1076,10 +1138,12 @@ function renderChamados(){
         <p><b>ID:</b> <span>#${c.chamado_id}</span></p>
         <p><b>Morador:</b> <span>${c.morador}</span></p>
         <p><b>Local:</b> <span>${c.local_chamado}</span></p>
+        <p><b>Categoria:</b> <span>${c.categoria || "-"}</span></p>
+        <p><b>Prioridade:</b> <span class="${classePrioridade(c.prioridade)}">${c.prioridade || "-"}</span></p>
         <p><b>Criado por:</b> <span>${c.nome_usuario || "Usuário"}${c.login_usuario ? ` (${c.login_usuario})` : ""}</span></p>
         <p><b>Profissional:</b> <span>${c.nome_profissional || "-"}</span></p>
-        <p><b>Data agendada:</b> <span>${c.data_agendada || "-"}</span></p>
-        <p><b>Data conclusão:</b> <span>${c.data_conclusao || "-"}</span></p>
+        <p><b>Data agendada:</b> <span>${formatarData(c.data_agendada)}</span></p>
+        <p><b>Data conclusão:</b> <span>${formatarData(c.data_conclusao)}</span></p>
         <p><b>Observação:</b> <span>${c.observacao_servico || "-"}</span></p>
 
         <div class="footer-card">
@@ -1108,7 +1172,8 @@ function renderAgenda(){
     .filter(c =>
       (c.titulo || "").toLowerCase().includes(busca) ||
       (c.local_chamado || "").toLowerCase().includes(busca) ||
-      (c.nome_profissional || "").toLowerCase().includes(busca)
+      (c.nome_profissional || "").toLowerCase().includes(busca) ||
+      (c.categoria || "").toLowerCase().includes(busca)
     );
 
   lista.innerHTML = "";
@@ -1131,9 +1196,11 @@ function renderAgenda(){
         <h3>${c.titulo}</h3>
         <p><b>Morador:</b> <span>${c.morador}</span></p>
         <p><b>Local:</b> <span>${c.local_chamado}</span></p>
+        <p><b>Categoria:</b> <span>${c.categoria || "-"}</span></p>
+        <p><b>Prioridade:</b> <span class="${classePrioridade(c.prioridade)}">${c.prioridade || "-"}</span></p>
         <p><b>Profissional:</b> <span>${c.nome_profissional || "-"}</span></p>
         <p><b>Especialidade:</b> <span>${c.especialidade_profissional || "-"}</span></p>
-        <p><b>Data marcada:</b> <span>${c.data_agendada}</span></p>
+        <p><b>Data marcada:</b> <span>${formatarData(c.data_agendada)}</span></p>
         <p><b>Status:</b> <span>${concluido ? "Concluído" : c.status_chamado}</span></p>
       </div>
     `;
@@ -1241,6 +1308,8 @@ function abrirNovo(){
   document.getElementById("observacaoServico").value = "";
   document.getElementById("status").value = "Aberto";
   document.getElementById("status").disabled = true;
+  document.getElementById("prioridade").value = "Média";
+  document.getElementById("categoria").value = "";
   document.getElementById("profissional").value = "";
   document.getElementById("dataAgendada").value = "";
   document.getElementById("dataConclusao").value = "";
@@ -1263,9 +1332,11 @@ function abrirEditar(id){
   document.getElementById("observacaoServico").value = chamado.observacao_servico || "";
   document.getElementById("status").value = chamado.status_chamado === "Fechado" ? "Concluído" : (chamado.status_chamado || "Aberto");
   document.getElementById("status").disabled = false;
+  document.getElementById("prioridade").value = chamado.prioridade || "Média";
+  document.getElementById("categoria").value = chamado.categoria || "";
   document.getElementById("profissional").value = chamado.profissional_id || "";
-  document.getElementById("dataAgendada").value = chamado.data_agendada || "";
-  document.getElementById("dataConclusao").value = chamado.data_conclusao || "";
+  document.getElementById("dataAgendada").value = chamado.data_agendada ? chamado.data_agendada.split("T")[0] : "";
+  document.getElementById("dataConclusao").value = chamado.data_conclusao ? chamado.data_conclusao.split("T")[0] : "";
   document.getElementById("dataConclusao").disabled = false;
   document.getElementById("modalChamado").classList.add("show");
 }
@@ -1282,6 +1353,8 @@ function salvarChamado(){
     descricao: document.getElementById("descricao").value.trim(),
     observacao_servico: document.getElementById("observacaoServico").value.trim(),
     status_chamado: document.getElementById("status").value,
+    prioridade: document.getElementById("prioridade").value,
+    categoria: document.getElementById("categoria").value.trim(),
     profissional_id: document.getElementById("profissional").value || null,
     data_agendada: document.getElementById("dataAgendada").value || null,
     data_conclusao: document.getElementById("dataConclusao").value || null,
@@ -1290,7 +1363,22 @@ function salvarChamado(){
   };
 
   if (!payload.titulo || !payload.morador || !payload.local_chamado){
-    toast("Preencha os campos obrigatórios", "error");
+    toast("Preencha os campos obrigatórios corretamente", "error");
+    return;
+  }
+
+  if (payload.titulo.length > 120 || payload.morador.length > 120 || payload.local_chamado.length > 120){
+    toast("Título, morador e local devem ter no máximo 120 caracteres", "error");
+    return;
+  }
+
+  if (!payload.categoria){
+    toast("Selecione uma categoria", "error");
+    return;
+  }
+
+  if (payload.descricao.length > 500 || payload.observacao_servico.length > 500){
+    toast("Descrição e observação devem ter no máximo 500 caracteres", "error");
     return;
   }
 
@@ -1317,7 +1405,7 @@ function salvarChamado(){
 }
 
 function excluirChamado(id){
-  if (!confirm("Excluir este chamado?")) return;
+  if (!window.confirm("⚠️ Tem certeza que deseja excluir este chamado?")) return;
 
   fetch(`${API}/chamados/${id}`, {
     method:"DELETE",
