@@ -6,6 +6,27 @@
 <title>Painel de Chamados</title>
 
 <style>
+:root{
+  --bg:#eef2f7;
+  --sidebar:#0f172a;
+  --sidebar-hover:#1e293b;
+  --sidebar-active:#2563eb;
+  --card:#ffffff;
+  --border:#dbe2ea;
+  --text:#0f172a;
+  --muted:#64748b;
+  --primary:#2563eb;
+  --primary-dark:#1d4ed8;
+  --success:#16a34a;
+  --warning:#f59e0b;
+  --danger:#dc2626;
+  --success-bg:#dcfce7;
+  --warning-bg:#fef3c7;
+  --primary-bg:#dbeafe;
+  --shadow:0 10px 25px rgba(15,23,42,0.08);
+  --radius:16px;
+}
+
 *{
   margin:0;
   padding:0;
@@ -14,94 +35,218 @@
 }
 
 body{
-  background:#eef2f7;
-  color:#0f172a;
+  background:var(--bg);
+  color:var(--text);
 }
 
-header{
-  background:linear-gradient(135deg,#1e3a8a,#2563eb);
+.layout{
+  display:flex;
+  min-height:100vh;
+}
+
+.sidebar{
+  width:270px;
+  background:var(--sidebar);
   color:white;
-  padding:20px 30px;
+  padding:22px 16px;
   display:flex;
-  justify-content:space-between;
-  align-items:center;
-  gap:12px;
-  flex-wrap:wrap;
-  box-shadow:0 10px 25px rgba(0,0,0,0.08);
+  flex-direction:column;
+  gap:18px;
+  box-shadow:4px 0 20px rgba(0,0,0,0.08);
 }
 
-.header-left{
+.brand{
   display:flex;
   align-items:center;
   gap:12px;
+  padding:6px 8px 18px;
+  border-bottom:1px solid rgba(255,255,255,0.08);
 }
 
-.header-logo{
+.brand-icon{
   width:48px;
   height:48px;
   border-radius:14px;
-  background:rgba(255,255,255,0.16);
+  background:linear-gradient(135deg,var(--primary-dark),var(--primary));
   display:flex;
   align-items:center;
   justify-content:center;
-  font-size:24px;
-  border:1px solid rgba(255,255,255,0.2);
+  font-size:22px;
+  box-shadow:0 10px 24px rgba(37,99,235,0.25);
 }
 
-header h2{
-  font-size:24px;
-}
-
-.top-right{
-  display:flex;
-  align-items:center;
-  gap:12px;
-  flex-wrap:wrap;
-}
-
-.user-badge{
-  background:rgba(255,255,255,0.15);
-  border:1px solid rgba(255,255,255,0.2);
-  padding:10px 14px;
-  border-radius:999px;
-  font-size:14px;
-}
-
-header button{
-  background:#dc2626;
-  color:white;
-  border:none;
-  padding:10px 16px;
-  border-radius:10px;
-  cursor:pointer;
+.brand-text h1{
+  font-size:18px;
+  line-height:1.1;
   font-weight:700;
 }
 
-.container{
-  max-width:1280px;
-  margin:24px auto;
-  padding:0 20px 30px;
+.brand-text p{
+  font-size:12px;
+  color:#94a3b8;
+  margin-top:4px;
+}
+
+.menu{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+
+.menu button{
+  width:100%;
+  background:transparent;
+  color:white;
+  border:none;
+  text-align:left;
+  padding:13px 14px;
+  border-radius:12px;
+  cursor:pointer;
+  font-size:15px;
+  font-weight:600;
+  transition:0.2s;
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+
+.menu button:hover{
+  background:var(--sidebar-hover);
+}
+
+.menu button.active{
+  background:var(--sidebar-active);
+}
+
+.menu-icon{
+  width:20px;
+  text-align:center;
+  font-size:17px;
+  flex-shrink:0;
+}
+
+.user-box{
+  margin-top:auto;
+  padding:14px;
+  border-radius:14px;
+  background:rgba(255,255,255,0.06);
+  border:1px solid rgba(255,255,255,0.08);
+}
+
+.user-box strong{
+  display:block;
+  font-size:15px;
+}
+
+.user-box span{
+  display:block;
+  font-size:13px;
+  color:#cbd5e1;
+  margin-top:4px;
+}
+
+.main{
+  flex:1;
+  padding:24px;
+}
+
+.topbar{
+  background:var(--card);
+  border-radius:18px;
+  padding:18px 22px;
+  box-shadow:var(--shadow);
+  border:1px solid var(--border);
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:14px;
+  margin-bottom:20px;
+  flex-wrap:wrap;
+}
+
+.topbar h2{
+  font-size:28px;
+  font-weight:700;
+}
+
+.topbar p{
+  color:var(--muted);
+  font-size:14px;
+  margin-top:4px;
+}
+
+.top-actions{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+}
+
+.btn{
+  border:none;
+  border-radius:12px;
+  cursor:pointer;
+  font-weight:700;
+  transition:0.2s;
+}
+
+.btn:hover{
+  transform:translateY(-1px);
+}
+
+.btn-primary{
+  background:var(--primary);
+  color:white;
+  padding:12px 16px;
+}
+
+.btn-primary:hover{
+  background:var(--primary-dark);
+}
+
+.btn-success{
+  background:var(--success);
+  color:white;
+  padding:12px 16px;
+}
+
+.btn-danger{
+  background:var(--danger);
+  color:white;
+  padding:10px 14px;
+}
+
+.btn-warning{
+  background:var(--warning);
+  color:white;
+  padding:10px 14px;
+}
+
+.btn-secondary{
+  background:#e5e7eb;
+  color:#111827;
+  padding:10px 14px;
 }
 
 .stats{
   display:grid;
   grid-template-columns:repeat(5,1fr);
   gap:14px;
-  margin-bottom:18px;
+  margin-bottom:20px;
 }
 
 .stat{
-  background:white;
+  background:var(--card);
   border-radius:16px;
   padding:18px;
-  box-shadow:0 10px 25px rgba(15,23,42,0.08);
-  border:1px solid #dbe2ea;
+  box-shadow:var(--shadow);
+  border:1px solid var(--border);
 }
 
 .stat h3{
   font-size:13px;
-  color:#64748b;
+  color:var(--muted);
   margin-bottom:8px;
+  font-weight:600;
 }
 
 .stat p{
@@ -109,36 +254,11 @@ header button{
   font-weight:800;
 }
 
-.tabs{
-  display:flex;
-  gap:12px;
-  margin-bottom:18px;
-  flex-wrap:wrap;
-}
-
-.tab-btn{
-  border:none;
-  border-radius:12px;
-  padding:12px 16px;
-  cursor:pointer;
-  font-weight:700;
-  background:white;
-  color:#0f172a;
-  border:1px solid #dbe2ea;
-  box-shadow:0 10px 25px rgba(15,23,42,0.06);
-}
-
-.tab-btn.active{
-  background:#2563eb;
-  color:white;
-  border-color:#2563eb;
-}
-
 .toolbar{
-  background:white;
-  border:1px solid #dbe2ea;
-  border-radius:16px;
-  box-shadow:0 10px 25px rgba(15,23,42,0.08);
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
   padding:16px;
   margin-bottom:20px;
 }
@@ -158,70 +278,72 @@ input, select, textarea{
   outline:none;
   transition:0.2s;
   background:#fff;
+  color:var(--text);
 }
 
 input:focus, select:focus, textarea:focus{
-  border-color:#2563eb;
+  border-color:var(--primary);
   box-shadow:0 0 0 4px rgba(37,99,235,0.12);
 }
 
-#busca{
+#busca, #buscaUsuario, #buscaAgenda, #buscaProfissional{
   min-width:240px;
   flex:1;
   height:48px;
 }
 
-#filtro{
-  min-width:180px;
+#filtro, #filtroUsuario{
+  min-width:190px;
   height:48px;
 }
 
-#filtroUsuario{
-  min-width:220px;
-  height:48px;
+.section{
+  display:none;
 }
 
-#buscaUsuario{
-  min-width:240px;
-  flex:1;
-  height:48px;
+.section.active{
+  display:block;
 }
 
-.btn{
-  border:none;
+.dashboard-grid{
+  display:grid;
+  grid-template-columns:2fr 1fr;
+  gap:18px;
+}
+
+.panel{
+  background:var(--card);
+  border-radius:18px;
+  padding:20px;
+  box-shadow:var(--shadow);
+  border:1px solid var(--border);
+}
+
+.panel h3{
+  margin-bottom:14px;
+  font-size:20px;
+}
+
+.simple-list{
+  display:grid;
+  gap:12px;
+}
+
+.simple-item{
+  padding:12px 14px;
   border-radius:12px;
-  cursor:pointer;
-  font-weight:700;
-  transition:0.2s;
+  background:#f8fafc;
+  border:1px solid var(--border);
 }
 
-.btn:hover{
-  transform:translateY(-1px);
+.simple-item strong{
+  display:block;
+  margin-bottom:4px;
 }
 
-.btn-success{
-  background:#16a34a;
-  color:white;
-  height:48px;
-  padding:0 18px;
-}
-
-.btn-warning{
-  background:#f59e0b;
-  color:white;
-  padding:10px 14px;
-}
-
-.btn-danger{
-  background:#dc2626;
-  color:white;
-  padding:10px 14px;
-}
-
-.btn-secondary{
-  background:#e5e7eb;
-  color:#111827;
-  padding:10px 14px;
+.simple-item span{
+  color:var(--muted);
+  font-size:14px;
 }
 
 .cards{
@@ -231,11 +353,11 @@ input:focus, select:focus, textarea:focus{
 }
 
 .card{
-  background:white;
+  background:var(--card);
   padding:20px;
   border-radius:18px;
-  box-shadow:0 10px 25px rgba(15,23,42,0.08);
-  border:1px solid #dbe2ea;
+  box-shadow:var(--shadow);
+  border:1px solid var(--border);
   position:relative;
   overflow:hidden;
 }
@@ -246,17 +368,17 @@ input:focus, select:focus, textarea:focus{
   top:0;
   left:0;
   width:100%;
-  height:5px;
-  background:linear-gradient(90deg,#2563eb,#60a5fa);
+  height:4px;
+  background:linear-gradient(90deg,var(--primary),#60a5fa);
 }
 
 .card h3{
   margin-bottom:10px;
-  font-size:24px;
+  font-size:22px;
 }
 
 .card .desc{
-  color:#64748b;
+  color:var(--muted);
   margin-bottom:16px;
   min-height:42px;
   line-height:1.5;
@@ -264,10 +386,11 @@ input:focus, select:focus, textarea:focus{
 
 .card p{
   margin:6px 0;
+  font-size:14px;
 }
 
 .card p span{
-  color:#64748b;
+  color:var(--muted);
 }
 
 .footer-card{
@@ -287,9 +410,20 @@ input:focus, select:focus, textarea:focus{
   font-weight:800;
 }
 
-.aberto{background:#dbeafe;color:#1d4ed8;}
-.emandamento{background:#fef3c7;color:#a16207;}
-.concluido{background:#dcfce7;color:#15803d;}
+.aberto{
+  background:var(--primary-bg);
+  color:#1d4ed8;
+}
+
+.emandamento{
+  background:var(--warning-bg);
+  color:#a16207;
+}
+
+.concluido{
+  background:var(--success-bg);
+  color:var(--success);
+}
 
 .acoes{
   display:flex;
@@ -297,30 +431,21 @@ input:focus, select:focus, textarea:focus{
   flex-wrap:wrap;
 }
 
-.empty{
-  background:white;
-  border:1px dashed #cbd5e1;
-  border-radius:18px;
-  padding:40px 20px;
-  text-align:center;
-  color:#64748b;
-}
-
-.list-users{
+.list-users, .list-profissionais{
   display:grid;
   grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
   gap:18px;
 }
 
-.user-card{
-  background:white;
+.user-card, .prof-card{
+  background:var(--card);
   padding:20px;
   border-radius:18px;
-  box-shadow:0 10px 25px rgba(15,23,42,0.08);
-  border:1px solid #dbe2ea;
+  box-shadow:var(--shadow);
+  border:1px solid var(--border);
 }
 
-.user-card h3{
+.user-card h3, .prof-card h3{
   font-size:21px;
   margin-bottom:8px;
 }
@@ -335,30 +460,45 @@ input:focus, select:focus, textarea:focus{
 }
 
 .badge-admin{
-  background:#dbeafe;
+  background:var(--primary-bg);
   color:#1d4ed8;
 }
 
 .badge-cliente{
-  background:#dcfce7;
-  color:#15803d;
+  background:var(--success-bg);
+  color:var(--success);
 }
 
-.user-actions{
+.badge-ativo{
+  background:var(--success-bg);
+  color:var(--success);
+}
+
+.badge-inativo{
+  background:#fee2e2;
+  color:#b91c1c;
+}
+
+.user-actions, .prof-actions{
   margin-top:14px;
   display:flex;
   gap:10px;
   flex-wrap:wrap;
 }
 
-.hidden{
-  display:none !important;
+.empty{
+  background:var(--card);
+  border:1px dashed #cbd5e1;
+  border-radius:18px;
+  padding:40px 20px;
+  text-align:center;
+  color:var(--muted);
 }
 
 .modal{
   position:fixed;
   inset:0;
-  background:rgba(15,23,42,0.5);
+  background:rgba(15,23,42,0.55);
   display:none;
   align-items:center;
   justify-content:center;
@@ -372,12 +512,13 @@ input:focus, select:focus, textarea:focus{
 
 .modal-box{
   width:100%;
-  max-width:520px;
-  background:white;
+  max-width:560px;
+  background:var(--card);
   border-radius:22px;
   box-shadow:0 25px 60px rgba(0,0,0,0.25);
   padding:24px;
   animation:subir .25s ease;
+  border:1px solid var(--border);
 }
 
 .modal-box h3{
@@ -386,7 +527,7 @@ input:focus, select:focus, textarea:focus{
 }
 
 .modal-box .sub{
-  color:#64748b;
+  color:var(--muted);
   margin-bottom:18px;
 }
 
@@ -420,21 +561,46 @@ textarea{
   box-shadow:0 10px 25px rgba(15,23,42,0.18);
 }
 
-.success{background:#16a34a;}
-.error{background:#dc2626;}
+.success{background:var(--success);}
+.error{background:var(--danger);}
+
+.hidden{
+  display:none !important;
+}
 
 @keyframes subir{
   from{opacity:0;transform:translateY(12px);}
   to{opacity:1;transform:translateY(0);}
 }
 
-@media (max-width:1100px){
+@media (max-width:1200px){
   .stats{
     grid-template-columns:repeat(3,1fr);
   }
+
+  .dashboard-grid{
+    grid-template-columns:1fr;
+  }
 }
 
-@media (max-width:800px){
+@media (max-width:900px){
+  .layout{
+    flex-direction:column;
+  }
+
+  .sidebar{
+    width:100%;
+  }
+
+  .menu{
+    flex-direction:row;
+    flex-wrap:wrap;
+  }
+
+  .menu button{
+    width:auto;
+  }
+
   .stats{
     grid-template-columns:repeat(2,1fr);
   }
@@ -450,16 +616,16 @@ textarea{
     align-items:stretch;
   }
 
-  #busca,#filtro,#filtroUsuario,#buscaUsuario,.btn-success{
+  #busca,#filtro,#filtroUsuario,#buscaUsuario,#buscaAgenda,#buscaProfissional{
     width:100%;
   }
 
-  header{
-    padding:20px;
+  .main{
+    padding:16px;
   }
 
-  header h2{
-    font-size:21px;
+  .topbar h2{
+    font-size:24px;
   }
 }
 </style>
@@ -467,78 +633,159 @@ textarea{
 
 <body>
 
-<header>
-  <div class="header-left">
-    <div class="header-logo">🔐</div>
-    <h2>Controle de Chamados</h2>
-  </div>
-
-  <div class="top-right">
-    <div class="user-badge" id="usuarioInfo">Usuário</div>
-    <button onclick="logout()">Sair</button>
-  </div>
-</header>
-
-<div class="container">
-
-  <div class="stats">
-    <div class="stat">
-      <h3>Total de Chamados</h3>
-      <p id="statTotal">0</p>
-    </div>
-    <div class="stat">
-      <h3>Em Aberto</h3>
-      <p id="statAberto">0</p>
-    </div>
-    <div class="stat">
-      <h3>Em Andamento</h3>
-      <p id="statAndamento">0</p>
-    </div>
-    <div class="stat">
-      <h3>Concluídos</h3>
-      <p id="statConcluido">0</p>
-    </div>
-    <div class="stat">
-      <h3>Total de Usuários</h3>
-      <p id="statUsuarios">0</p>
-    </div>
-  </div>
-
-  <div class="tabs">
-    <button class="tab-btn active" id="btnTabChamados" onclick="trocarAba('chamados')">Chamados</button>
-    <button class="tab-btn hidden" id="btnTabUsuarios" onclick="trocarAba('usuarios')">Usuários</button>
-  </div>
-
-  <section id="secaoChamados">
-    <div class="toolbar">
-      <div class="controls">
-        <button class="btn btn-success" onclick="abrirNovo()">+ Novo Chamado</button>
-        <input id="busca" placeholder="Buscar por título..." oninput="renderChamados()">
-        <select id="filtro" onchange="renderChamados()">
-          <option value="">Todos os status</option>
-          <option value="Aberto">Aberto</option>
-          <option value="Em andamento">Em andamento</option>
-          <option value="Concluído">Concluído</option>
-        </select>
-        <select id="filtroUsuario" class="hidden" onchange="renderChamados()"></select>
+<div class="layout">
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-icon">🔐</div>
+      <div class="brand-text">
+        <h1>Controle de<br>Chamados</h1>
+        <p>Painel do sistema</p>
       </div>
     </div>
 
-    <div id="listaChamados" class="cards"></div>
-  </section>
+    <nav class="menu">
+      <button id="menuDashboard" class="active" onclick="trocarAba('dashboard')">
+        <span class="menu-icon">📊</span>
+        <span>Dashboard</span>
+      </button>
 
-  <section id="secaoUsuarios" class="hidden">
-    <div class="toolbar">
-      <div class="controls">
-        <input id="buscaUsuario" placeholder="Buscar usuário por nome ou login..." oninput="renderUsuarios()">
+      <button id="menuChamados" onclick="trocarAba('chamados')">
+        <span class="menu-icon">🛠️</span>
+        <span>Chamados</span>
+      </button>
+
+      <button id="menuAgenda" onclick="trocarAba('agenda')">
+        <span class="menu-icon">📅</span>
+        <span>Agenda</span>
+      </button>
+
+      <button id="menuProfissionais" class="hidden" onclick="trocarAba('profissionais')">
+        <span class="menu-icon">👷</span>
+        <span>Profissionais</span>
+      </button>
+
+      <button id="menuNovo" onclick="abrirNovo()">
+        <span class="menu-icon">➕</span>
+        <span>Novo Chamado</span>
+      </button>
+
+      <button id="menuUsuarios" class="hidden" onclick="trocarAba('usuarios')">
+        <span class="menu-icon">👥</span>
+        <span>Usuários</span>
+      </button>
+
+      <button onclick="logout()">
+        <span class="menu-icon">🚪</span>
+        <span>Sair</span>
+      </button>
+    </nav>
+
+    <div class="user-box">
+      <strong id="usuarioNome">Usuário</strong>
+      <span id="usuarioTipo">Perfil</span>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="topbar">
+      <div>
+        <h2 id="tituloPagina">Dashboard</h2>
+        <p id="subtituloPagina">Visão geral do sistema</p>
+      </div>
+
+      <div class="top-actions">
+        <button class="btn btn-primary" id="btnTopoNovo" onclick="abrirNovo()">+ Novo Chamado</button>
+        <button class="btn btn-success hidden" id="btnTopoProfissional" onclick="abrirModalProfissional()">+ Novo Profissional</button>
       </div>
     </div>
 
-    <div id="listaUsuarios" class="list-users"></div>
-  </section>
+    <div class="stats">
+      <div class="stat">
+        <h3>Total de Chamados</h3>
+        <p id="statTotal">0</p>
+      </div>
+      <div class="stat">
+        <h3>Em Aberto</h3>
+        <p id="statAberto">0</p>
+      </div>
+      <div class="stat">
+        <h3>Em Andamento</h3>
+        <p id="statAndamento">0</p>
+      </div>
+      <div class="stat">
+        <h3>Concluídos</h3>
+        <p id="statConcluido">0</p>
+      </div>
+      <div class="stat">
+        <h3>Profissionais</h3>
+        <p id="statProfissionais">0</p>
+      </div>
+    </div>
+
+    <section id="secaoDashboard" class="section active">
+      <div class="dashboard-grid">
+        <div class="panel">
+          <h3>Últimos Chamados</h3>
+          <div id="ultimosChamados" class="simple-list"></div>
+        </div>
+
+        <div class="panel">
+          <h3>Resumo</h3>
+          <div id="resumoSistema" class="simple-list"></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="secaoChamados" class="section">
+      <div class="toolbar">
+        <div class="controls">
+          <input id="busca" placeholder="Buscar por título..." oninput="renderChamados()">
+          <select id="filtro" onchange="renderChamados()">
+            <option value="">Todos os status</option>
+            <option value="Aberto">Aberto</option>
+            <option value="Em andamento">Em andamento</option>
+            <option value="Concluído">Concluído</option>
+          </select>
+          <select id="filtroUsuario" class="hidden" onchange="renderChamados()"></select>
+        </div>
+      </div>
+
+      <div id="listaChamados" class="cards"></div>
+    </section>
+
+    <section id="secaoAgenda" class="section">
+      <div class="toolbar">
+        <div class="controls">
+          <input id="buscaAgenda" placeholder="Buscar por título, local ou profissional..." oninput="renderAgenda()">
+        </div>
+      </div>
+
+      <div id="listaAgenda" class="cards"></div>
+    </section>
+
+    <section id="secaoProfissionais" class="section">
+      <div class="toolbar">
+        <div class="controls">
+          <input id="buscaProfissional" placeholder="Buscar profissional..." oninput="renderProfissionais()">
+        </div>
+      </div>
+
+      <div id="listaProfissionais" class="list-profissionais"></div>
+    </section>
+
+    <section id="secaoUsuarios" class="section">
+      <div class="toolbar">
+        <div class="controls">
+          <input id="buscaUsuario" placeholder="Buscar usuário por nome ou login..." oninput="renderUsuarios()">
+        </div>
+      </div>
+
+      <div id="listaUsuarios" class="list-users"></div>
+    </section>
+  </main>
 </div>
 
-<div id="modal" class="modal">
+<div id="modalChamado" class="modal">
   <div class="modal-box">
     <h3 id="modalTitulo">Novo Chamado</h3>
     <p class="sub" id="modalSub">Preencha as informações abaixo.</p>
@@ -553,12 +800,41 @@ textarea{
         <option value="Em andamento">Em andamento</option>
         <option value="Concluído">Concluído</option>
       </select>
+      <select id="profissional">
+        <option value="">Selecione um profissional</option>
+      </select>
+      <input id="dataAgendada" type="date">
+      <input id="dataConclusao" type="date">
       <textarea id="descricao" placeholder="Descrição do chamado"></textarea>
+      <textarea id="observacaoServico" placeholder="Observações do serviço"></textarea>
     </div>
 
     <div class="modal-actions">
-      <button class="btn btn-secondary" onclick="fecharModal()">Cancelar</button>
+      <button class="btn btn-secondary" onclick="fecharModalChamado()">Cancelar</button>
       <button class="btn btn-success" onclick="salvarChamado()">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<div id="modalProfissional" class="modal">
+  <div class="modal-box">
+    <h3 id="modalTituloProfissional">Novo Profissional</h3>
+    <p class="sub">Preencha os dados do profissional.</p>
+
+    <div class="form-grid">
+      <input type="hidden" id="profissionalId">
+      <input id="nomeProfissional" type="text" placeholder="Nome">
+      <input id="especialidadeProfissional" type="text" placeholder="Especialidade">
+      <input id="telefoneProfissional" type="text" placeholder="Telefone">
+      <select id="statusProfissional">
+        <option value="Ativo">Ativo</option>
+        <option value="Inativo">Inativo</option>
+      </select>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="fecharModalProfissional()">Cancelar</button>
+      <button class="btn btn-success" onclick="salvarProfissional()">Salvar</button>
     </div>
   </div>
 </div>
@@ -569,18 +845,20 @@ const API = "https://backend-chamados-production.up.railway.app";
 let usuario = JSON.parse(localStorage.getItem("usuario"));
 let chamados = [];
 let usuarios = [];
-let editando = false;
-let abaAtual = "chamados";
+let profissionais = [];
+let editandoChamado = false;
+let editandoProfissional = false;
 
 if (!usuario) {
   location.href = "index.html";
 }
 
-document.getElementById("usuarioInfo").innerText =
-  `${usuario.nome || usuario.login || "Usuário"} • ${usuario.tipo_usuario}`;
+document.getElementById("usuarioNome").innerText = usuario.nome || usuario.login || "Usuário";
+document.getElementById("usuarioTipo").innerText = usuario.tipo_usuario;
 
 if (usuario.tipo_usuario === "admin") {
-  document.getElementById("btnTabUsuarios").classList.remove("hidden");
+  document.getElementById("menuUsuarios").classList.remove("hidden");
+  document.getElementById("menuProfissionais").classList.remove("hidden");
   document.getElementById("filtroUsuario").classList.remove("hidden");
 }
 
@@ -601,13 +879,66 @@ function formatarClasse(status){
 }
 
 function trocarAba(aba){
-  abaAtual = aba;
+  const secoes = ["dashboard","chamados","agenda","profissionais","usuarios"];
+  secoes.forEach(nome => {
+    const secao = document.getElementById("secao" + nome.charAt(0).toUpperCase() + nome.slice(1));
+    if (secao) secao.classList.remove("active");
 
-  document.getElementById("secaoChamados").classList.toggle("hidden", aba !== "chamados");
-  document.getElementById("secaoUsuarios").classList.toggle("hidden", aba !== "usuarios");
+    const menu = document.getElementById("menu" + nome.charAt(0).toUpperCase() + nome.slice(1));
+    if (menu) menu.classList.remove("active");
+  });
 
-  document.getElementById("btnTabChamados").classList.toggle("active", aba === "chamados");
-  document.getElementById("btnTabUsuarios").classList.toggle("active", aba === "usuarios");
+  document.getElementById("secao" + aba.charAt(0).toUpperCase() + aba.slice(1)).classList.add("active");
+  const botao = document.getElementById("menu" + aba.charAt(0).toUpperCase() + aba.slice(1));
+  if (botao) botao.classList.add("active");
+
+  const titulo = document.getElementById("tituloPagina");
+  const subtitulo = document.getElementById("subtituloPagina");
+  const btnNovo = document.getElementById("btnTopoNovo");
+  const btnProf = document.getElementById("btnTopoProfissional");
+
+  btnNovo.classList.add("hidden");
+  btnProf.classList.add("hidden");
+
+  if (aba === "dashboard") {
+    titulo.innerText = "Dashboard";
+    subtitulo.innerText = "Visão geral do sistema";
+    btnNovo.classList.remove("hidden");
+  } else if (aba === "chamados") {
+    titulo.innerText = "Chamados";
+    subtitulo.innerText = "Gerencie e acompanhe os chamados";
+    btnNovo.classList.remove("hidden");
+  } else if (aba === "agenda") {
+    titulo.innerText = "Agenda de Serviços";
+    subtitulo.innerText = "Serviços com data marcada";
+  } else if (aba === "profissionais") {
+    titulo.innerText = "Profissionais";
+    subtitulo.innerText = "Equipe técnica cadastrada";
+    if (usuario.tipo_usuario === "admin") btnProf.classList.remove("hidden");
+  } else if (aba === "usuarios") {
+    titulo.innerText = "Usuários";
+    subtitulo.innerText = "Usuários cadastrados no sistema";
+  }
+}
+
+function preencherSelectProfissionais() {
+  const select = document.getElementById("profissional");
+  select.innerHTML = `<option value="">Selecione um profissional</option>` +
+    profissionais
+      .filter(p => p.status_profissional === "Ativo")
+      .map(p => `<option value="${p.profissional_id}">${p.nome} - ${p.especialidade}</option>`)
+      .join("");
+}
+
+function preencherFiltroUsuarios(){
+  if (usuario.tipo_usuario !== "admin") return;
+
+  const filtro = document.getElementById("filtroUsuario");
+  const opcoes = usuarios
+    .map(u => `<option value="${u.usuario_id}">${u.nome} (${u.login})</option>`)
+    .join("");
+
+  filtro.innerHTML = `<option value="">Todos os usuários</option>${opcoes}`;
 }
 
 function atualizarStats(){
@@ -618,19 +949,42 @@ function atualizarStats(){
     chamados.filter(c => c.status_chamado === "Em andamento").length;
   document.getElementById("statConcluido").innerText =
     chamados.filter(c => c.status_chamado === "Concluído" || c.status_chamado === "Fechado").length;
-  document.getElementById("statUsuarios").innerText =
-    usuario.tipo_usuario === "admin" ? usuarios.length : "-";
+  document.getElementById("statProfissionais").innerText = profissionais.length;
 }
 
-function preencherFiltroUsuarios(){
-  const filtro = document.getElementById("filtroUsuario");
-  if (usuario.tipo_usuario !== "admin") return;
+function renderDashboard(){
+  const ultimos = document.getElementById("ultimosChamados");
+  const resumo = document.getElementById("resumoSistema");
 
-  const opcoes = usuarios
-    .map(u => `<option value="${u.usuario_id}">${u.nome} (${u.login})</option>`)
-    .join("");
+  const recentes = chamados.slice(0, 5);
 
-  filtro.innerHTML = `<option value="">Todos os usuários</option>${opcoes}`;
+  ultimos.innerHTML = recentes.length
+    ? recentes.map(c => `
+      <div class="simple-item">
+        <strong>${c.titulo}</strong>
+        <span>${c.morador} • ${c.status_chamado === 'Fechado' ? 'Concluído' : c.status_chamado}</span>
+      </div>
+    `).join("")
+    : `<div class="empty"><p>Nenhum chamado recente.</p></div>`;
+
+  resumo.innerHTML = `
+    <div class="simple-item">
+      <strong>Perfil logado</strong>
+      <span>${usuario.tipo_usuario}</span>
+    </div>
+    <div class="simple-item">
+      <strong>Serviços agendados</strong>
+      <span>${chamados.filter(c => c.data_agendada).length}</span>
+    </div>
+    <div class="simple-item">
+      <strong>Chamados concluídos</strong>
+      <span>${chamados.filter(c => c.status_chamado === "Concluído" || c.status_chamado === "Fechado").length}</span>
+    </div>
+    <div class="simple-item">
+      <strong>Profissionais cadastrados</strong>
+      <span>${profissionais.length}</span>
+    </div>
+  `;
 }
 
 function carregarChamados(){
@@ -644,7 +998,6 @@ function carregarChamados(){
 function carregarUsuarios(){
   if (usuario.tipo_usuario !== "admin") {
     usuarios = [];
-    atualizarStats();
     return Promise.resolve();
   }
 
@@ -660,12 +1013,28 @@ function carregarUsuarios(){
     });
 }
 
+function carregarProfissionais(){
+  return fetch(`${API}/profissionais`)
+    .then(r => r.json())
+    .then(data => {
+      profissionais = Array.isArray(data) ? data : [];
+      preencherSelectProfissionais();
+    })
+    .catch(() => {
+      profissionais = [];
+      toast("Erro ao carregar profissionais", "error");
+    });
+}
+
 function carregarTudo(){
-  Promise.all([carregarChamados(), carregarUsuarios()])
+  Promise.all([carregarChamados(), carregarUsuarios(), carregarProfissionais()])
     .then(() => {
       atualizarStats();
+      renderDashboard();
       renderChamados();
+      renderAgenda();
       renderUsuarios();
+      renderProfissionais();
     })
     .catch(() => toast("Erro ao carregar dados", "error"));
 }
@@ -680,7 +1049,7 @@ function renderChamados(){
 
   const filtrados = chamados
     .filter(c => (c.titulo || "").toLowerCase().includes(busca))
-    .filter(c => !filtro || (c.status_chamado === filtro || (filtro === "Concluído" && c.status_chamado === "Fechado")))
+    .filter(c => !filtro || c.status_chamado === filtro || (filtro === "Concluído" && c.status_chamado === "Fechado"))
     .filter(c => !filtroUsuario || String(c.usuario_id) === String(filtroUsuario));
 
   lista.innerHTML = "";
@@ -708,6 +1077,10 @@ function renderChamados(){
         <p><b>Morador:</b> <span>${c.morador}</span></p>
         <p><b>Local:</b> <span>${c.local_chamado}</span></p>
         <p><b>Criado por:</b> <span>${c.nome_usuario || "Usuário"}${c.login_usuario ? ` (${c.login_usuario})` : ""}</span></p>
+        <p><b>Profissional:</b> <span>${c.nome_profissional || "-"}</span></p>
+        <p><b>Data agendada:</b> <span>${c.data_agendada || "-"}</span></p>
+        <p><b>Data conclusão:</b> <span>${c.data_conclusao || "-"}</span></p>
+        <p><b>Observação:</b> <span>${c.observacao_servico || "-"}</span></p>
 
         <div class="footer-card">
           <span class="status ${formatarClasse(concluido ? 'Concluído' : c.status_chamado)}">
@@ -726,10 +1099,51 @@ function renderChamados(){
   });
 }
 
+function renderAgenda(){
+  const lista = document.getElementById("listaAgenda");
+  const busca = document.getElementById("buscaAgenda").value.toLowerCase();
+
+  const filtrados = chamados
+    .filter(c => c.data_agendada)
+    .filter(c =>
+      (c.titulo || "").toLowerCase().includes(busca) ||
+      (c.local_chamado || "").toLowerCase().includes(busca) ||
+      (c.nome_profissional || "").toLowerCase().includes(busca)
+    );
+
+  lista.innerHTML = "";
+
+  if (!filtrados.length){
+    lista.innerHTML = `
+      <div class="empty">
+        <h3>Nenhum serviço agendado</h3>
+        <p>Os chamados com data marcada aparecerão aqui.</p>
+      </div>
+    `;
+    return;
+  }
+
+  filtrados.forEach(c => {
+    const concluido = c.status_chamado === "Concluído" || c.status_chamado === "Fechado";
+
+    lista.innerHTML += `
+      <div class="card">
+        <h3>${c.titulo}</h3>
+        <p><b>Morador:</b> <span>${c.morador}</span></p>
+        <p><b>Local:</b> <span>${c.local_chamado}</span></p>
+        <p><b>Profissional:</b> <span>${c.nome_profissional || "-"}</span></p>
+        <p><b>Especialidade:</b> <span>${c.especialidade_profissional || "-"}</span></p>
+        <p><b>Data marcada:</b> <span>${c.data_agendada}</span></p>
+        <p><b>Status:</b> <span>${concluido ? "Concluído" : c.status_chamado}</span></p>
+      </div>
+    `;
+  });
+}
+
 function renderUsuarios(){
-  const lista = document.getElementById("listaUsuarios");
   if (usuario.tipo_usuario !== "admin") return;
 
+  const lista = document.getElementById("listaUsuarios");
   const busca = document.getElementById("buscaUsuario").value.toLowerCase();
 
   const filtrados = usuarios.filter(u =>
@@ -773,105 +1187,133 @@ function renderUsuarios(){
   });
 }
 
-function limparFormulario(){
+function renderProfissionais(){
+  if (usuario.tipo_usuario !== "admin") return;
+
+  const lista = document.getElementById("listaProfissionais");
+  const busca = document.getElementById("buscaProfissional").value.toLowerCase();
+
+  const filtrados = profissionais.filter(p =>
+    (p.nome || "").toLowerCase().includes(busca) ||
+    (p.especialidade || "").toLowerCase().includes(busca)
+  );
+
+  lista.innerHTML = "";
+
+  if (!filtrados.length){
+    lista.innerHTML = `
+      <div class="empty">
+        <h3>Nenhum profissional encontrado</h3>
+        <p>Cadastre um profissional para começar.</p>
+      </div>
+    `;
+    return;
+  }
+
+  filtrados.forEach(p => {
+    lista.innerHTML += `
+      <div class="prof-card">
+        <h3>${p.nome}</h3>
+        <p><b>Especialidade:</b> <span>${p.especialidade}</span></p>
+        <p><b>Telefone:</b> <span>${p.telefone || "-"}</span></p>
+        <span class="badge-role ${p.status_profissional === 'Ativo' ? 'badge-cliente' : 'badge-admin'}">
+          ${p.status_profissional}
+        </span>
+
+        <div class="prof-actions">
+          <button class="btn btn-warning" onclick="abrirEditarProfissional(${p.profissional_id})">Editar</button>
+          <button class="btn btn-danger" onclick="excluirProfissional(${p.profissional_id})">Excluir</button>
+        </div>
+      </div>
+    `;
+  });
+}
+
+function abrirNovo(){
+  editandoChamado = false;
+  document.getElementById("modalTitulo").innerText = "Novo Chamado";
+  document.getElementById("modalSub").innerText = "Preencha as informações abaixo.";
   document.getElementById("chamadoId").value = "";
   document.getElementById("titulo").value = "";
   document.getElementById("morador").value = "";
   document.getElementById("local").value = "";
   document.getElementById("descricao").value = "";
+  document.getElementById("observacaoServico").value = "";
   document.getElementById("status").value = "Aberto";
-}
-
-function abrirNovo(){
-  editando = false;
-  limparFormulario();
-  document.getElementById("modalTitulo").innerText = "Novo Chamado";
-  document.getElementById("modalSub").innerText = "Preencha as informações abaixo.";
   document.getElementById("status").disabled = true;
-  document.getElementById("modal").classList.add("show");
+  document.getElementById("profissional").value = "";
+  document.getElementById("dataAgendada").value = "";
+  document.getElementById("dataConclusao").value = "";
+  document.getElementById("dataConclusao").disabled = true;
+  document.getElementById("modalChamado").classList.add("show");
 }
 
 function abrirEditar(id){
   const chamado = chamados.find(c => c.chamado_id === id);
   if (!chamado) return;
 
-  editando = true;
+  editandoChamado = true;
+  document.getElementById("modalTitulo").innerText = "Editar Chamado";
+  document.getElementById("modalSub").innerText = "Atualize as informações do chamado.";
   document.getElementById("chamadoId").value = chamado.chamado_id;
   document.getElementById("titulo").value = chamado.titulo || "";
   document.getElementById("morador").value = chamado.morador || "";
   document.getElementById("local").value = chamado.local_chamado || "";
   document.getElementById("descricao").value = chamado.descricao || "";
-  document.getElementById("status").value =
-    chamado.status_chamado === "Fechado" ? "Concluído" : (chamado.status_chamado || "Aberto");
-
-  document.getElementById("modalTitulo").innerText = "Editar Chamado";
-  document.getElementById("modalSub").innerText = "Atualize as informações do chamado.";
+  document.getElementById("observacaoServico").value = chamado.observacao_servico || "";
+  document.getElementById("status").value = chamado.status_chamado === "Fechado" ? "Concluído" : (chamado.status_chamado || "Aberto");
   document.getElementById("status").disabled = false;
-  document.getElementById("modal").classList.add("show");
+  document.getElementById("profissional").value = chamado.profissional_id || "";
+  document.getElementById("dataAgendada").value = chamado.data_agendada || "";
+  document.getElementById("dataConclusao").value = chamado.data_conclusao || "";
+  document.getElementById("dataConclusao").disabled = false;
+  document.getElementById("modalChamado").classList.add("show");
 }
 
-function fecharModal(){
-  document.getElementById("modal").classList.remove("show");
+function fecharModalChamado(){
+  document.getElementById("modalChamado").classList.remove("show");
 }
 
 function salvarChamado(){
-  const id = document.getElementById("chamadoId").value;
-  const titulo = document.getElementById("titulo").value.trim();
-  const morador = document.getElementById("morador").value.trim();
-  const local = document.getElementById("local").value.trim();
-  const descricao = document.getElementById("descricao").value.trim();
-  const status = document.getElementById("status").value;
+  const payload = {
+    titulo: document.getElementById("titulo").value.trim(),
+    morador: document.getElementById("morador").value.trim(),
+    local_chamado: document.getElementById("local").value.trim(),
+    descricao: document.getElementById("descricao").value.trim(),
+    observacao_servico: document.getElementById("observacaoServico").value.trim(),
+    status_chamado: document.getElementById("status").value,
+    profissional_id: document.getElementById("profissional").value || null,
+    data_agendada: document.getElementById("dataAgendada").value || null,
+    data_conclusao: document.getElementById("dataConclusao").value || null,
+    usuario_id: usuario.usuario_id,
+    tipo_usuario: usuario.tipo_usuario
+  };
 
-  if (!titulo || !morador || !local){
+  if (!payload.titulo || !payload.morador || !payload.local_chamado){
     toast("Preencha os campos obrigatórios", "error");
     return;
   }
 
-  if (!editando){
-    fetch(`${API}/chamados`, {
-      method:"POST",
-      headers:{ "Content-Type":"application/json" },
-      body:JSON.stringify({
-        titulo,
-        morador,
-        local_chamado: local,
-        descricao,
-        usuario_id: usuario.usuario_id
-      })
-    })
-    .then(r => r.json())
-    .then(data => {
-      if (data.erro){
-        toast(data.erro, "error");
-        return;
-      }
-      toast("Chamado criado com sucesso");
-      fecharModal();
-      carregarTudo();
-    })
-    .catch(() => toast("Erro ao criar chamado", "error"));
-  } else {
-    fetch(`${API}/chamados/${id}`, {
-      method:"PUT",
-      headers:{ "Content-Type":"application/json" },
-      body:JSON.stringify({
-        titulo,
-        status_chamado: status,
-        tipo_usuario: usuario.tipo_usuario
-      })
-    })
-    .then(r => r.json())
-    .then(data => {
-      if (data.erro){
-        toast(data.erro, "error");
-        return;
-      }
-      toast("Chamado atualizado com sucesso");
-      fecharModal();
-      carregarTudo();
-    })
-    .catch(() => toast("Erro ao atualizar chamado", "error"));
-  }
+  const id = document.getElementById("chamadoId").value;
+  const url = editandoChamado ? `${API}/chamados/${id}` : `${API}/chamados`;
+  const method = editandoChamado ? "PUT" : "POST";
+
+  fetch(url, {
+    method,
+    headers: { "Content-Type":"application/json" },
+    body: JSON.stringify(payload)
+  })
+  .then(r => r.json())
+  .then(data => {
+    if (data.erro){
+      toast(data.erro, "error");
+      return;
+    }
+    toast(editandoChamado ? "Chamado atualizado com sucesso" : "Chamado criado com sucesso");
+    fecharModalChamado();
+    carregarTudo();
+  })
+  .catch(() => toast("Erro ao salvar chamado", "error"));
 }
 
 function excluirChamado(id){
@@ -880,9 +1322,7 @@ function excluirChamado(id){
   fetch(`${API}/chamados/${id}`, {
     method:"DELETE",
     headers:{ "Content-Type":"application/json" },
-    body:JSON.stringify({
-      tipo_usuario: usuario.tipo_usuario
-    })
+    body: JSON.stringify({ tipo_usuario: usuario.tipo_usuario })
   })
   .then(r => r.json())
   .then(data => {
@@ -896,13 +1336,98 @@ function excluirChamado(id){
   .catch(() => toast("Erro ao excluir chamado", "error"));
 }
 
+function abrirModalProfissional(){
+  editandoProfissional = false;
+  document.getElementById("modalTituloProfissional").innerText = "Novo Profissional";
+  document.getElementById("profissionalId").value = "";
+  document.getElementById("nomeProfissional").value = "";
+  document.getElementById("especialidadeProfissional").value = "";
+  document.getElementById("telefoneProfissional").value = "";
+  document.getElementById("statusProfissional").value = "Ativo";
+  document.getElementById("modalProfissional").classList.add("show");
+}
+
+function abrirEditarProfissional(id){
+  const prof = profissionais.find(p => p.profissional_id === id);
+  if (!prof) return;
+
+  editandoProfissional = true;
+  document.getElementById("modalTituloProfissional").innerText = "Editar Profissional";
+  document.getElementById("profissionalId").value = prof.profissional_id;
+  document.getElementById("nomeProfissional").value = prof.nome;
+  document.getElementById("especialidadeProfissional").value = prof.especialidade;
+  document.getElementById("telefoneProfissional").value = prof.telefone || "";
+  document.getElementById("statusProfissional").value = prof.status_profissional;
+  document.getElementById("modalProfissional").classList.add("show");
+}
+
+function fecharModalProfissional(){
+  document.getElementById("modalProfissional").classList.remove("show");
+}
+
+function salvarProfissional(){
+  const id = document.getElementById("profissionalId").value;
+  const payload = {
+    nome: document.getElementById("nomeProfissional").value.trim(),
+    especialidade: document.getElementById("especialidadeProfissional").value.trim(),
+    telefone: document.getElementById("telefoneProfissional").value.trim(),
+    status_profissional: document.getElementById("statusProfissional").value,
+    tipo_usuario: usuario.tipo_usuario
+  };
+
+  if (!payload.nome || !payload.especialidade){
+    toast("Preencha nome e especialidade", "error");
+    return;
+  }
+
+  const url = editandoProfissional ? `${API}/profissionais/${id}` : `${API}/profissionais`;
+  const method = editandoProfissional ? "PUT" : "POST";
+
+  fetch(url, {
+    method,
+    headers: { "Content-Type":"application/json" },
+    body: JSON.stringify(payload)
+  })
+  .then(r => r.json())
+  .then(data => {
+    if (data.erro){
+      toast(data.erro, "error");
+      return;
+    }
+    toast(editandoProfissional ? "Profissional atualizado" : "Profissional cadastrado");
+    fecharModalProfissional();
+    carregarTudo();
+  })
+  .catch(() => toast("Erro ao salvar profissional", "error"));
+}
+
+function excluirProfissional(id){
+  if (!confirm("Excluir este profissional?")) return;
+
+  fetch(`${API}/profissionais/${id}`, {
+    method:"DELETE",
+    headers:{ "Content-Type":"application/json" },
+    body: JSON.stringify({ tipo_usuario: usuario.tipo_usuario })
+  })
+  .then(r => r.json())
+  .then(data => {
+    if (data.erro){
+      toast(data.erro, "error");
+      return;
+    }
+    toast("Profissional excluído com sucesso");
+    carregarTudo();
+  })
+  .catch(() => toast("Erro ao excluir profissional", "error"));
+}
+
 function excluirUsuario(id){
   if (!confirm("Excluir este usuário?")) return;
 
   fetch(`${API}/usuarios/${id}`, {
     method:"DELETE",
     headers:{ "Content-Type":"application/json" },
-    body:JSON.stringify({
+    body: JSON.stringify({
       tipo_usuario: usuario.tipo_usuario,
       usuario_id: usuario.usuario_id
     })
@@ -925,10 +1450,8 @@ function logout(){
 }
 
 window.addEventListener("click", (e) => {
-  const modal = document.getElementById("modal");
-  if (e.target === modal){
-    fecharModal();
-  }
+  if (e.target === document.getElementById("modalChamado")) fecharModalChamado();
+  if (e.target === document.getElementById("modalProfissional")) fecharModalProfissional();
 });
 
 carregarTudo();
