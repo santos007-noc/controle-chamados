@@ -286,6 +286,12 @@ input:focus, select:focus, textarea:focus{
   box-shadow:0 0 0 4px rgba(37,99,235,0.12);
 }
 
+input:disabled, select:disabled, textarea:disabled{
+  background:#f1f5f9;
+  color:#64748b;
+  cursor:not-allowed;
+}
+
 #busca, #buscaUsuario, #buscaAgenda, #buscaProfissional{
   min-width:240px;
   flex:1;
@@ -933,9 +939,55 @@ function classePrioridade(prioridade){
 
 function formatarData(data){
   if (!data) return "-";
-  const dataObj = new Date(data);
-  if (isNaN(dataObj.getTime())) return data;
-  return dataObj.toLocaleDateString("pt-BR");
+
+  const texto = String(data).split("T")[0];
+  const partes = texto.split("-");
+
+  if (partes.length === 3) {
+    return `${partes[2]}/${partes[1]}/${partes[0]}`;
+  }
+
+  return data;
+}
+
+function configurarCamposClienteNovoChamado() {
+  const inputMorador = document.getElementById("morador");
+  const selectStatus = document.getElementById("status");
+  const selectProfissional = document.getElementById("profissional");
+  const inputDataAgendada = document.getElementById("dataAgendada");
+  const inputDataConclusao = document.getElementById("dataConclusao");
+  const textareaObservacao = document.getElementById("observacaoServico");
+
+  if (usuario.tipo_usuario === "admin") {
+    inputMorador.disabled = false;
+    selectStatus.disabled = true;
+    selectProfissional.disabled = false;
+    inputDataAgendada.disabled = false;
+    inputDataConclusao.disabled = true;
+    textareaObservacao.disabled = false;
+  } else {
+    inputMorador.value = usuario.nome || "";
+    inputMorador.disabled = true;
+    selectStatus.value = "Aberto";
+    selectStatus.disabled = true;
+    selectProfissional.value = "";
+    selectProfissional.disabled = true;
+    inputDataAgendada.value = "";
+    inputDataAgendada.disabled = true;
+    inputDataConclusao.value = "";
+    inputDataConclusao.disabled = true;
+    textareaObservacao.value = "";
+    textareaObservacao.disabled = true;
+  }
+}
+
+function configurarCamposAdminEdicao() {
+  document.getElementById("morador").disabled = false;
+  document.getElementById("status").disabled = false;
+  document.getElementById("profissional").disabled = false;
+  document.getElementById("dataAgendada").disabled = false;
+  document.getElementById("dataConclusao").disabled = false;
+  document.getElementById("observacaoServico").disabled = false;
 }
 
 function trocarAba(aba){
@@ -1307,13 +1359,13 @@ function abrirNovo(){
   document.getElementById("descricao").value = "";
   document.getElementById("observacaoServico").value = "";
   document.getElementById("status").value = "Aberto";
-  document.getElementById("status").disabled = true;
   document.getElementById("prioridade").value = "Média";
   document.getElementById("categoria").value = "";
   document.getElementById("profissional").value = "";
   document.getElementById("dataAgendada").value = "";
   document.getElementById("dataConclusao").value = "";
-  document.getElementById("dataConclusao").disabled = true;
+
+  configurarCamposClienteNovoChamado();
   document.getElementById("modalChamado").classList.add("show");
 }
 
@@ -1331,13 +1383,13 @@ function abrirEditar(id){
   document.getElementById("descricao").value = chamado.descricao || "";
   document.getElementById("observacaoServico").value = chamado.observacao_servico || "";
   document.getElementById("status").value = chamado.status_chamado === "Fechado" ? "Concluído" : (chamado.status_chamado || "Aberto");
-  document.getElementById("status").disabled = false;
   document.getElementById("prioridade").value = chamado.prioridade || "Média";
   document.getElementById("categoria").value = chamado.categoria || "";
   document.getElementById("profissional").value = chamado.profissional_id || "";
-  document.getElementById("dataAgendada").value = chamado.data_agendada ? chamado.data_agendada.split("T")[0] : "";
-  document.getElementById("dataConclusao").value = chamado.data_conclusao ? chamado.data_conclusao.split("T")[0] : "";
-  document.getElementById("dataConclusao").disabled = false;
+  document.getElementById("dataAgendada").value = chamado.data_agendada ? String(chamado.data_agendada).split("T")[0] : "";
+  document.getElementById("dataConclusao").value = chamado.data_conclusao ? String(chamado.data_conclusao).split("T")[0] : "";
+
+  configurarCamposAdminEdicao();
   document.getElementById("modalChamado").classList.add("show");
 }
 
@@ -1346,18 +1398,20 @@ function fecharModalChamado(){
 }
 
 function salvarChamado(){
+  const ehAdmin = usuario.tipo_usuario === "admin";
+
   const payload = {
     titulo: document.getElementById("titulo").value.trim(),
-    morador: document.getElementById("morador").value.trim(),
+    morador: ehAdmin ? document.getElementById("morador").value.trim() : (usuario.nome || ""),
     local_chamado: document.getElementById("local").value.trim(),
     descricao: document.getElementById("descricao").value.trim(),
-    observacao_servico: document.getElementById("observacaoServico").value.trim(),
-    status_chamado: document.getElementById("status").value,
+    observacao_servico: ehAdmin ? document.getElementById("observacaoServico").value.trim() : "",
+    status_chamado: ehAdmin ? document.getElementById("status").value : "Aberto",
     prioridade: document.getElementById("prioridade").value,
     categoria: document.getElementById("categoria").value.trim(),
-    profissional_id: document.getElementById("profissional").value || null,
-    data_agendada: document.getElementById("dataAgendada").value || null,
-    data_conclusao: document.getElementById("dataConclusao").value || null,
+    profissional_id: ehAdmin ? (document.getElementById("profissional").value || null) : null,
+    data_agendada: ehAdmin ? (document.getElementById("dataAgendada").value || null) : null,
+    data_conclusao: ehAdmin ? (document.getElementById("dataConclusao").value || null) : null,
     usuario_id: usuario.usuario_id,
     tipo_usuario: usuario.tipo_usuario
   };
