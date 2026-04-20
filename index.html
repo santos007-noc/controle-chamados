@@ -28,38 +28,36 @@
       width:100%;
       max-width:420px;
       background:rgba(255,255,255,0.97);
-      padding:42px 34px;
+      padding:40px 30px;
       border-radius:24px;
       box-shadow:0 25px 60px rgba(0,0,0,0.20);
       text-align:center;
-      animation:subir 0.45s ease;
     }
 
     .icon{
-      width:74px;
-      height:74px;
-      margin:0 auto 18px;
+      width:70px;
+      height:70px;
+      margin:0 auto 15px;
       border-radius:20px;
-      background:linear-gradient(135deg, #1e3a8a, #2563eb);
+      background:linear-gradient(135deg, #2563eb, #1e40af);
       display:flex;
       align-items:center;
       justify-content:center;
       color:white;
-      font-size:32px;
-      box-shadow:0 10px 25px rgba(37,99,235,0.30);
+      font-size:30px;
+      box-shadow:0 10px 25px rgba(37,99,235,0.3);
     }
 
-    h2{
-      font-size:2rem;
-      line-height:1.2;
+    h1{
+      font-size:26px;
+      margin-bottom:8px;
       color:#0f172a;
-      margin-bottom:10px;
     }
 
     .sub{
       color:#64748b;
-      font-size:15px;
-      margin-bottom:28px;
+      font-size:14px;
+      margin-bottom:25px;
     }
 
     .campo{
@@ -69,18 +67,17 @@
 
     .campo label{
       display:block;
-      margin-bottom:8px;
+      margin-bottom:6px;
+      font-weight:600;
       color:#334155;
       font-size:14px;
-      font-weight:600;
     }
 
     input{
       width:100%;
-      padding:14px 15px;
-      border-radius:14px;
+      padding:13px;
+      border-radius:12px;
       border:1px solid #cbd5e1;
-      font-size:15px;
       outline:none;
       transition:0.2s;
       background:#f8fafc;
@@ -89,18 +86,17 @@
     input:focus{
       border-color:#2563eb;
       background:white;
-      box-shadow:0 0 0 4px rgba(37,99,235,0.12);
+      box-shadow:0 0 0 4px rgba(37,99,235,0.1);
     }
 
     button{
       width:100%;
-      padding:14px;
-      margin-top:12px;
+      padding:13px;
       border:none;
-      border-radius:14px;
+      border-radius:12px;
+      margin-top:10px;
+      font-weight:bold;
       cursor:pointer;
-      font-weight:700;
-      font-size:15px;
       transition:0.2s;
     }
 
@@ -108,52 +104,26 @@
       transform:translateY(-1px);
     }
 
-    .login{
-      background:linear-gradient(135deg, #2563eb, #1d4ed8);
+    .entrar{
+      background:linear-gradient(135deg,#2563eb,#1e40af);
       color:white;
-      box-shadow:0 10px 20px rgba(37,99,235,0.22);
     }
 
-    .login:hover{
-      filter:brightness(1.03);
-    }
-
-    .cadastro{
+    .cadastrar{
       background:#e5e7eb;
       color:#111827;
     }
 
-    .cadastro:hover{
-      background:#d1d5db;
-    }
-
-    .mensagem{
-      margin-top:14px;
+    .msg{
+      margin-top:12px;
       font-size:14px;
-      min-height:20px;
+      min-height:18px;
       font-weight:600;
     }
 
-    @keyframes subir{
-      from{
-        opacity:0;
-        transform:translateY(18px);
-      }
-      to{
-        opacity:1;
-        transform:translateY(0);
-      }
-    }
-
-    @media (max-width:480px){
-      .box{
-        padding:34px 22px;
-        border-radius:20px;
-      }
-
-      h2{
-        font-size:1.7rem;
-      }
+    .loading{
+      opacity:0.7;
+      pointer-events:none;
     }
   </style>
 </head>
@@ -162,73 +132,79 @@
 
   <div class="box">
     <div class="icon">🔐</div>
-
-    <h2>Controle de<br>Chamados</h2>
-    <p class="sub">Acesse o sistema para acompanhar e gerenciar solicitações</p>
+    <h1>Controle de Chamados</h1>
+    <p class="sub">Acesse sua conta</p>
 
     <div class="campo">
-      <label for="login">Usuário</label>
-      <input id="login" placeholder="Digite seu usuário">
+      <label>Usuário</label>
+      <input id="login" type="text" placeholder="Digite seu usuário">
     </div>
 
     <div class="campo">
-      <label for="senha">Senha</label>
+      <label>Senha</label>
       <input id="senha" type="password" placeholder="Digite sua senha">
     </div>
 
-    <button class="login" onclick="login()">Entrar</button>
-    <button class="cadastro" onclick="irCadastro()">Cadastrar</button>
+    <button class="entrar" onclick="entrar()" id="btnEntrar">Entrar</button>
+    <button class="cadastrar" onclick="irCadastro()">Cadastrar</button>
 
-    <div id="mensagem" class="mensagem"></div>
+    <div id="msg" class="msg"></div>
   </div>
 
   <script>
-   const API = "https://backend-chamados-wgmi.onrender.com";
+    const API = "https://backend-chamados-wgmi.onrender.com";
 
-    function login() {
+    function entrar(){
       const login = document.getElementById("login").value.trim();
       const senha = document.getElementById("senha").value.trim();
-      const msg = document.getElementById("mensagem");
+      const msg = document.getElementById("msg");
+      const btn = document.getElementById("btnEntrar");
 
       msg.innerText = "";
 
-      if (!login || !senha) {
-        msg.innerText = "Preencha os campos";
+      if(!login || !senha){
+        msg.innerText = "Preencha login e senha";
         msg.style.color = "red";
         return;
       }
 
-      fetch(`${API}/login`, {
-        method: "POST",
-        headers: {"Content-Type": "application/json"},
+      btn.innerText = "Entrando...";
+      btn.classList.add("loading");
+
+      fetch(`${API}/login`,{
+        method:"POST",
+        headers:{ "Content-Type":"application/json" },
         body: JSON.stringify({ login, senha })
       })
-      .then(r => r.json())
+      .then(res => res.json())
       .then(data => {
-        if (data.erro) {
+        if(data.erro){
           msg.innerText = data.erro;
           msg.style.color = "red";
+          btn.innerText = "Entrar";
+          btn.classList.remove("loading");
           return;
         }
 
-        const usuario = data.usuario || data;
-        localStorage.setItem("usuario", JSON.stringify(usuario));
+        localStorage.setItem("usuario", JSON.stringify(data.usuario));
 
-        msg.innerText = "Login realizado com sucesso!";
+        msg.innerText = "Login realizado!";
         msg.style.color = "green";
 
         setTimeout(() => {
-          location.href = "painel.html";
+          window.location.href = "painel.html";
         }, 800);
       })
       .catch(() => {
-        msg.innerText = "Erro no servidor";
+        msg.innerText = "Erro ao conectar com servidor";
         msg.style.color = "red";
+        btn.innerText = "Entrar";
+        btn.classList.remove("loading");
       });
     }
 
-    function irCadastro() {
-      location.href = "cadastro.html";
+    function irCadastro(){
+      window.location.href = "cadastro.html";
     }
   </script>
 
