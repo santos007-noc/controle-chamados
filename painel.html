@@ -811,7 +811,7 @@ textarea{
     <section id="secaoUsuarios" class="section">
       <div class="toolbar">
         <div class="controls">
-          <input id="buscaUsuario" placeholder="Buscar usuário por nome ou login..." oninput="renderUsuarios()">
+          <input id="buscaUsuario" placeholder="Buscar usuário por nome, apartamento ou login..." oninput="renderUsuarios()">
         </div>
       </div>
 
@@ -914,7 +914,11 @@ if (!usuario) {
   location.href = "index.html";
 }
 
-document.getElementById("usuarioNome").innerText = usuario.nome || usuario.login || "Usuário";
+function nomeComApartamento(obj) {
+  return `${obj.nome || obj.login || "Usuário"}${obj.apartamento ? ` - Apto ${obj.apartamento}` : ""}`;
+}
+
+document.getElementById("usuarioNome").innerText = nomeComApartamento(usuario);
 document.getElementById("usuarioTipo").innerText = usuario.tipo_usuario;
 
 if (usuario.tipo_usuario === "admin") {
@@ -966,7 +970,7 @@ function preencherFiltroUsuarios(){
 
   const filtro = document.getElementById("filtroUsuario");
   const opcoes = usuarios
-    .map(u => `<option value="${u.usuario_id}">${u.nome} (${u.login})</option>`)
+    .map(u => `<option value="${u.usuario_id}">${nomeComApartamento(u)} (${u.login})</option>`)
     .join("");
 
   filtro.innerHTML = `<option value="">Todos os usuários</option>${opcoes}`;
@@ -1085,7 +1089,7 @@ function configurarCamposConformePerfilNovo() {
     selectPrioridade.value = "Média";
     atualizarTextoHorario();
   } else {
-    inputMorador.value = usuario.nome || "";
+    inputMorador.value = nomeComApartamento(usuario);
     inputMorador.disabled = true;
     selectStatus.value = "Aberto";
     selectStatus.disabled = true;
@@ -1298,7 +1302,7 @@ function renderChamados(){
         <p><b>Local:</b> <span>${c.local_chamado}</span></p>
         <p><b>Categoria:</b> <span>${c.categoria || "-"}</span></p>
         <p><b>Prioridade:</b> <span class="${classePrioridade(c.prioridade)}">${c.prioridade || "-"}</span></p>
-        <p><b>Criado por:</b> <span>${c.nome_usuario || "Usuário"}${c.login_usuario ? ` (${c.login_usuario})` : ""}</span></p>
+        <p><b>Criado por:</b> <span>${(c.nome_usuario || "Usuário") + (c.apartamento_usuario ? ` - Apto ${c.apartamento_usuario}` : "")}${c.login_usuario ? ` (${c.login_usuario})` : ""}</span></p>
         <p><b>Profissional:</b> <span>${c.nome_profissional || "-"}</span></p>
         <p><b>Data:</b> <span>${formatarData(c.data_agendada)}</span></p>
         <p><b>Horário:</b> <span>${c.hora_agendada || "-"}</span></p>
@@ -1373,7 +1377,8 @@ function renderUsuarios(){
 
   const filtrados = usuarios.filter(u =>
     (u.nome || "").toLowerCase().includes(busca) ||
-    (u.login || "").toLowerCase().includes(busca)
+    (u.login || "").toLowerCase().includes(busca) ||
+    (u.apartamento || "").toLowerCase().includes(busca)
   );
 
   lista.innerHTML = "";
@@ -1395,7 +1400,7 @@ function renderUsuarios(){
 
     lista.innerHTML += `
       <div class="user-card">
-        <h3>${u.nome}</h3>
+        <h3>${nomeComApartamento(u)}</h3>
         <p><b>ID:</b> <span>${u.usuario_id}</span></p>
         <p><b>Login:</b> <span>${u.login}</span></p>
         <span class="badge-role ${ehAdmin ? 'badge-admin' : 'badge-cliente'}">
@@ -1538,7 +1543,7 @@ async function salvarChamado(){
 
   const payload = {
     titulo: document.getElementById("titulo").value.trim(),
-    morador: ehAdmin ? document.getElementById("morador").value.trim() : (usuario.nome || ""),
+    morador: ehAdmin ? document.getElementById("morador").value.trim() : nomeComApartamento(usuario),
     local_chamado: document.getElementById("local").value.trim(),
     descricao: document.getElementById("descricao").value.trim(),
     observacao_servico: ehAdmin ? document.getElementById("observacaoServico").value.trim() : "",
@@ -1581,10 +1586,6 @@ async function salvarChamado(){
   if (!payload.hora_agendada){
     toast("Selecione um horário", "error");
     return;
-  }
-
-  if (ehAdmin && payload.profissional_id) {
-    await carregarHorariosDisponiveisAdmin(payload.hora_agendada);
   }
 
   const id = document.getElementById("chamadoId").value;
