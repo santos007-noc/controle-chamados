@@ -446,6 +446,11 @@ input:disabled, select:disabled, textarea:disabled{
   font-weight:700;
 }
 
+.prioridade-adefinir{
+  color:#64748b !important;
+  font-weight:700;
+}
+
 .acoes{
   display:flex;
   gap:10px;
@@ -488,16 +493,6 @@ input:disabled, select:disabled, textarea:disabled{
 .badge-cliente{
   background:var(--success-bg);
   color:var(--success);
-}
-
-.badge-ativo{
-  background:var(--success-bg);
-  color:var(--success);
-}
-
-.badge-inativo{
-  background:#fee2e2;
-  color:#b91c1c;
 }
 
 .user-actions, .prof-actions{
@@ -593,6 +588,12 @@ textarea{
 
 .hidden{
   display:none !important;
+}
+
+.info-text{
+  font-size:13px;
+  color:var(--muted);
+  margin-top:-4px;
 }
 
 @keyframes subir{
@@ -775,6 +776,7 @@ textarea{
           </select>
           <select id="filtroPrioridade" onchange="renderChamados()">
             <option value="">Todas as prioridades</option>
+            <option value="A definir">A definir</option>
             <option value="Alta">Alta</option>
             <option value="Média">Média</option>
             <option value="Baixa">Baixa</option>
@@ -825,9 +827,11 @@ textarea{
 
     <div class="form-grid">
       <input type="hidden" id="chamadoId">
+
       <input id="titulo" type="text" placeholder="Título do chamado" maxlength="120">
       <input id="morador" type="text" placeholder="Nome do morador" maxlength="120">
       <input id="local" type="text" placeholder="Local do problema" maxlength="120">
+
       <select id="status">
         <option value="Aberto">Aberto</option>
         <option value="Em andamento">Em andamento</option>
@@ -835,8 +839,9 @@ textarea{
       </select>
 
       <select id="prioridade">
+        <option value="A definir">A definir</option>
         <option value="Baixa">Baixa</option>
-        <option value="Média" selected>Média</option>
+        <option value="Média">Média</option>
         <option value="Alta">Alta</option>
       </select>
 
@@ -854,7 +859,13 @@ textarea{
       </select>
 
       <input id="dataAgendada" type="date">
+      <select id="horaAgendada">
+        <option value="">Selecione um horário</option>
+      </select>
+      <div class="info-text" id="textoHorario">Horários disponíveis de acordo com a data e o profissional.</div>
+
       <input id="dataConclusao" type="date">
+
       <textarea id="descricao" placeholder="Descrição do chamado" maxlength="500"></textarea>
       <textarea id="observacaoServico" placeholder="Observações do serviço" maxlength="500"></textarea>
     </div>
@@ -920,6 +931,10 @@ function toast(msg, type = "success"){
   setTimeout(() => t.remove(), 3000);
 }
 
+function hojeISO() {
+  return new Date().toISOString().slice(0, 10);
+}
+
 function formatarClasse(status){
   return status
     .normalize("NFD")
@@ -934,60 +949,171 @@ function classePrioridade(prioridade){
   if (valor === "alta") return "prioridade-alta";
   if (valor === "média" || valor === "media") return "prioridade-media";
   if (valor === "baixa") return "prioridade-baixa";
+  if (valor === "a definir") return "prioridade-adefinir";
   return "";
 }
 
 function formatarData(data){
   if (!data) return "-";
-
   const texto = String(data).split("T")[0];
   const partes = texto.split("-");
-
-  if (partes.length === 3) {
-    return `${partes[2]}/${partes[1]}/${partes[0]}`;
-  }
-
+  if (partes.length === 3) return `${partes[2]}/${partes[1]}/${partes[0]}`;
   return data;
 }
 
-function configurarCamposClienteNovoChamado() {
+function preencherFiltroUsuarios(){
+  if (usuario.tipo_usuario !== "admin") return;
+
+  const filtro = document.getElementById("filtroUsuario");
+  const opcoes = usuarios
+    .map(u => `<option value="${u.usuario_id}">${u.nome} (${u.login})</option>`)
+    .join("");
+
+  filtro.innerHTML = `<option value="">Todos os usuários</option>${opcoes}`;
+}
+
+function preencherSelectProfissionais() {
+  const select = document.getElementById("profissional");
+  select.innerHTML = `<option value="">Selecione um profissional</option>` +
+    profissionais
+      .filter(p => p.status_profissional === "Ativo")
+      .map(p => `<option value="${p.profissional_id}">${p.nome} - ${p.especialidade}</option>`)
+      .join("");
+}
+
+function gerarHorariosCliente(dataSelecionada) {
+  const horarios = [];
+  for (let h = 8; h <= 16; h++) {
+    horarios.push(`${String(h).padStart(2, '0')}:00`);
+    horarios.push(`${String(h).padStart(2, '0')}:30`);
+  }
+
+  if (dataSelecionada === hojeISO()) {
+    const agora = new Date();
+    let hora = agora.getHours();
+    let minuto = agora.getMinutes();
+
+    if (minuto > 0 && minuto <= 30) {
+      minuto = 30;
+    } else if (minuto > 30) {
+      hora += 1;
+      minuto = 0;
+    } else {
+      minuto = 0;
+    }
+
+    const minimo = `${String(hora).padStart(2, '0')}:${String(minuto).padStart(2, '0')}`;
+    return horarios.filter(h => h >= minimo);
+  }
+
+  return horarios;
+}
+
+function preencherHorariosSelect(lista, valorAtual = "") {
+  const select = document.getElementById("horaAgendada");
+  select.innerHTML = `<option value="">Selecione um horário</option>` +
+    lista.map(h => `<option value="${h}">${h}</option>`).join("");
+
+  if (valorAtual && lista.includes(valorAtual)) {
+    select.value = valorAtual;
+  } else if (valorAtual) {
+    select.innerHTML += `<option value="${valorAtual}" selected>${valorAtual}</option>`;
+    select.value = valorAtual;
+  }
+}
+
+function atualizarTextoHorario() {
+  const texto = document.getElementById("textoHorario");
+  if (usuario.tipo_usuario === "admin") {
+    texto.innerText = "Os horários livres são carregados conforme o profissional e a data escolhidos.";
+  } else {
+    texto.innerText = "Informe a data e o horário em que você estará disponível para atendimento.";
+  }
+}
+
+async function carregarHorariosDisponiveisAdmin(valorAtual = "") {
+  const profissionalId = document.getElementById("profissional").value;
+  const data = document.getElementById("dataAgendada").value;
+  const chamadoId = document.getElementById("chamadoId").value;
+
+  if (!profissionalId || !data) {
+    preencherHorariosSelect([], valorAtual);
+    return;
+  }
+
+  try {
+    const url = `${API}/profissionais/${profissionalId}/horarios?data=${data}${chamadoId ? `&ignorar_chamado_id=${chamadoId}` : ""}`;
+    const resposta = await fetch(url);
+    const dataJson = await resposta.json();
+    preencherHorariosSelect(Array.isArray(dataJson) ? dataJson : [], valorAtual);
+  } catch {
+    preencherHorariosSelect([], valorAtual);
+    toast("Erro ao carregar horários disponíveis", "error");
+  }
+}
+
+function carregarHorariosCliente(valorAtual = "") {
+  const data = document.getElementById("dataAgendada").value;
+  if (!data) {
+    preencherHorariosSelect([], valorAtual);
+    return;
+  }
+  preencherHorariosSelect(gerarHorariosCliente(data), valorAtual);
+}
+
+function configurarCamposConformePerfilNovo() {
   const inputMorador = document.getElementById("morador");
   const selectStatus = document.getElementById("status");
+  const selectPrioridade = document.getElementById("prioridade");
   const selectProfissional = document.getElementById("profissional");
   const inputDataAgendada = document.getElementById("dataAgendada");
+  const selectHoraAgendada = document.getElementById("horaAgendada");
   const inputDataConclusao = document.getElementById("dataConclusao");
   const textareaObservacao = document.getElementById("observacaoServico");
+
+  inputDataAgendada.min = hojeISO();
 
   if (usuario.tipo_usuario === "admin") {
     inputMorador.disabled = false;
     selectStatus.disabled = true;
+    selectPrioridade.disabled = false;
     selectProfissional.disabled = false;
     inputDataAgendada.disabled = false;
+    selectHoraAgendada.disabled = false;
     inputDataConclusao.disabled = true;
     textareaObservacao.disabled = false;
+    selectPrioridade.value = "Média";
+    atualizarTextoHorario();
   } else {
     inputMorador.value = usuario.nome || "";
     inputMorador.disabled = true;
     selectStatus.value = "Aberto";
     selectStatus.disabled = true;
+    selectPrioridade.value = "A definir";
+    selectPrioridade.disabled = true;
     selectProfissional.value = "";
     selectProfissional.disabled = true;
-    inputDataAgendada.value = "";
-    inputDataAgendada.disabled = true;
+    inputDataAgendada.disabled = false;
+    selectHoraAgendada.disabled = false;
     inputDataConclusao.value = "";
     inputDataConclusao.disabled = true;
     textareaObservacao.value = "";
     textareaObservacao.disabled = true;
+    atualizarTextoHorario();
   }
 }
 
 function configurarCamposAdminEdicao() {
   document.getElementById("morador").disabled = false;
   document.getElementById("status").disabled = false;
+  document.getElementById("prioridade").disabled = false;
   document.getElementById("profissional").disabled = false;
   document.getElementById("dataAgendada").disabled = false;
+  document.getElementById("horaAgendada").disabled = false;
   document.getElementById("dataConclusao").disabled = false;
   document.getElementById("observacaoServico").disabled = false;
+  document.getElementById("dataAgendada").min = hojeISO();
+  atualizarTextoHorario();
 }
 
 function trocarAba(aba){
@@ -1033,26 +1159,6 @@ function trocarAba(aba){
   }
 }
 
-function preencherSelectProfissionais() {
-  const select = document.getElementById("profissional");
-  select.innerHTML = `<option value="">Selecione um profissional</option>` +
-    profissionais
-      .filter(p => p.status_profissional === "Ativo")
-      .map(p => `<option value="${p.profissional_id}">${p.nome} - ${p.especialidade}</option>`)
-      .join("");
-}
-
-function preencherFiltroUsuarios(){
-  if (usuario.tipo_usuario !== "admin") return;
-
-  const filtro = document.getElementById("filtroUsuario");
-  const opcoes = usuarios
-    .map(u => `<option value="${u.usuario_id}">${u.nome} (${u.login})</option>`)
-    .join("");
-
-  filtro.innerHTML = `<option value="">Todos os usuários</option>${opcoes}`;
-}
-
 function atualizarStats(){
   document.getElementById("statTotal").innerText = chamados.length;
   document.getElementById("statAberto").innerText =
@@ -1060,7 +1166,7 @@ function atualizarStats(){
   document.getElementById("statAndamento").innerText =
     chamados.filter(c => c.status_chamado === "Em andamento").length;
   document.getElementById("statConcluido").innerText =
-    chamados.filter(c => c.status_chamado === "Concluído" || c.status_chamado === "Fechado").length;
+    chamados.filter(c => c.status_chamado === "Concluído").length;
   document.getElementById("statProfissionais").innerText = profissionais.length;
 }
 
@@ -1074,7 +1180,7 @@ function renderDashboard(){
     ? recentes.map(c => `
       <div class="simple-item">
         <strong>${c.titulo}</strong>
-        <span>${c.morador} • ${c.status_chamado === 'Fechado' ? 'Concluído' : c.status_chamado} • ${c.prioridade || 'Média'} • ${c.categoria || 'Sem categoria'}</span>
+        <span>${c.morador} • ${c.status_chamado} • ${c.prioridade || 'A definir'} • ${c.categoria || 'Sem categoria'}</span>
       </div>
     `).join("")
     : `<div class="empty"><p>Nenhum chamado recente.</p></div>`;
@@ -1090,7 +1196,7 @@ function renderDashboard(){
     </div>
     <div class="simple-item">
       <strong>Chamados concluídos</strong>
-      <span>${chamados.filter(c => c.status_chamado === "Concluído" || c.status_chamado === "Fechado").length}</span>
+      <span>${chamados.filter(c => c.status_chamado === "Concluído").length}</span>
     </div>
     <div class="simple-item">
       <strong>Profissionais cadastrados</strong>
@@ -1162,7 +1268,7 @@ function renderChamados(){
 
   const filtrados = chamados
     .filter(c => (c.titulo || "").toLowerCase().includes(busca))
-    .filter(c => !filtro || c.status_chamado === filtro || (filtro === "Concluído" && c.status_chamado === "Fechado"))
+    .filter(c => !filtro || c.status_chamado === filtro)
     .filter(c => !filtroPrioridade || c.prioridade === filtroPrioridade)
     .filter(c => !filtroUsuario || String(c.usuario_id) === String(filtroUsuario));
 
@@ -1179,7 +1285,7 @@ function renderChamados(){
   }
 
   filtrados.forEach(c => {
-    const concluido = c.status_chamado === "Concluído" || c.status_chamado === "Fechado";
+    const concluido = c.status_chamado === "Concluído";
     const podeEditar = usuario.tipo_usuario === "admin" && !concluido;
 
     lista.innerHTML += `
@@ -1194,13 +1300,14 @@ function renderChamados(){
         <p><b>Prioridade:</b> <span class="${classePrioridade(c.prioridade)}">${c.prioridade || "-"}</span></p>
         <p><b>Criado por:</b> <span>${c.nome_usuario || "Usuário"}${c.login_usuario ? ` (${c.login_usuario})` : ""}</span></p>
         <p><b>Profissional:</b> <span>${c.nome_profissional || "-"}</span></p>
-        <p><b>Data agendada:</b> <span>${formatarData(c.data_agendada)}</span></p>
+        <p><b>Data:</b> <span>${formatarData(c.data_agendada)}</span></p>
+        <p><b>Horário:</b> <span>${c.hora_agendada || "-"}</span></p>
         <p><b>Data conclusão:</b> <span>${formatarData(c.data_conclusao)}</span></p>
         <p><b>Observação:</b> <span>${c.observacao_servico || "-"}</span></p>
 
         <div class="footer-card">
-          <span class="status ${formatarClasse(concluido ? 'Concluído' : c.status_chamado)}">
-            ${concluido ? 'Concluído' : c.status_chamado}
+          <span class="status ${formatarClasse(c.status_chamado)}">
+            ${c.status_chamado}
           </span>
 
           ${podeEditar ? `
@@ -1241,8 +1348,6 @@ function renderAgenda(){
   }
 
   filtrados.forEach(c => {
-    const concluido = c.status_chamado === "Concluído" || c.status_chamado === "Fechado";
-
     lista.innerHTML += `
       <div class="card">
         <h3>${c.titulo}</h3>
@@ -1252,8 +1357,9 @@ function renderAgenda(){
         <p><b>Prioridade:</b> <span class="${classePrioridade(c.prioridade)}">${c.prioridade || "-"}</span></p>
         <p><b>Profissional:</b> <span>${c.nome_profissional || "-"}</span></p>
         <p><b>Especialidade:</b> <span>${c.especialidade_profissional || "-"}</span></p>
-        <p><b>Data marcada:</b> <span>${formatarData(c.data_agendada)}</span></p>
-        <p><b>Status:</b> <span>${concluido ? "Concluído" : c.status_chamado}</span></p>
+        <p><b>Data:</b> <span>${formatarData(c.data_agendada)}</span></p>
+        <p><b>Horário:</b> <span>${c.hora_agendada || "-"}</span></p>
+        <p><b>Status:</b> <span>${c.status_chamado}</span></p>
       </div>
     `;
   });
@@ -1359,17 +1465,18 @@ function abrirNovo(){
   document.getElementById("descricao").value = "";
   document.getElementById("observacaoServico").value = "";
   document.getElementById("status").value = "Aberto";
-  document.getElementById("prioridade").value = "Média";
+  document.getElementById("prioridade").value = usuario.tipo_usuario === "admin" ? "Média" : "A definir";
   document.getElementById("categoria").value = "";
   document.getElementById("profissional").value = "";
   document.getElementById("dataAgendada").value = "";
+  document.getElementById("horaAgendada").value = "";
   document.getElementById("dataConclusao").value = "";
-
-  configurarCamposClienteNovoChamado();
+  configurarCamposConformePerfilNovo();
+  preencherHorariosSelect([]);
   document.getElementById("modalChamado").classList.add("show");
 }
 
-function abrirEditar(id){
+async function abrirEditar(id){
   const chamado = chamados.find(c => c.chamado_id === id);
   if (!chamado) return;
 
@@ -1382,100 +1489,19 @@ function abrirEditar(id){
   document.getElementById("local").value = chamado.local_chamado || "";
   document.getElementById("descricao").value = chamado.descricao || "";
   document.getElementById("observacaoServico").value = chamado.observacao_servico || "";
-  document.getElementById("status").value = chamado.status_chamado === "Fechado" ? "Concluído" : (chamado.status_chamado || "Aberto");
+  document.getElementById("status").value = chamado.status_chamado || "Aberto";
   document.getElementById("prioridade").value = chamado.prioridade || "Média";
   document.getElementById("categoria").value = chamado.categoria || "";
   document.getElementById("profissional").value = chamado.profissional_id || "";
   document.getElementById("dataAgendada").value = chamado.data_agendada ? String(chamado.data_agendada).split("T")[0] : "";
   document.getElementById("dataConclusao").value = chamado.data_conclusao ? String(chamado.data_conclusao).split("T")[0] : "";
-
   configurarCamposAdminEdicao();
+  await carregarHorariosDisponiveisAdmin(chamado.hora_agendada || "");
   document.getElementById("modalChamado").classList.add("show");
 }
 
 function fecharModalChamado(){
   document.getElementById("modalChamado").classList.remove("show");
-}
-
-function salvarChamado(){
-  const ehAdmin = usuario.tipo_usuario === "admin";
-
-  const payload = {
-    titulo: document.getElementById("titulo").value.trim(),
-    morador: ehAdmin ? document.getElementById("morador").value.trim() : (usuario.nome || ""),
-    local_chamado: document.getElementById("local").value.trim(),
-    descricao: document.getElementById("descricao").value.trim(),
-    observacao_servico: ehAdmin ? document.getElementById("observacaoServico").value.trim() : "",
-    status_chamado: ehAdmin ? document.getElementById("status").value : "Aberto",
-    prioridade: document.getElementById("prioridade").value,
-    categoria: document.getElementById("categoria").value.trim(),
-    profissional_id: ehAdmin ? (document.getElementById("profissional").value || null) : null,
-    data_agendada: ehAdmin ? (document.getElementById("dataAgendada").value || null) : null,
-    data_conclusao: ehAdmin ? (document.getElementById("dataConclusao").value || null) : null,
-    usuario_id: usuario.usuario_id,
-    tipo_usuario: usuario.tipo_usuario
-  };
-
-  if (!payload.titulo || !payload.morador || !payload.local_chamado){
-    toast("Preencha os campos obrigatórios corretamente", "error");
-    return;
-  }
-
-  if (payload.titulo.length > 120 || payload.morador.length > 120 || payload.local_chamado.length > 120){
-    toast("Título, morador e local devem ter no máximo 120 caracteres", "error");
-    return;
-  }
-
-  if (!payload.categoria){
-    toast("Selecione uma categoria", "error");
-    return;
-  }
-
-  if (payload.descricao.length > 500 || payload.observacao_servico.length > 500){
-    toast("Descrição e observação devem ter no máximo 500 caracteres", "error");
-    return;
-  }
-
-  const id = document.getElementById("chamadoId").value;
-  const url = editandoChamado ? `${API}/chamados/${id}` : `${API}/chamados`;
-  const method = editandoChamado ? "PUT" : "POST";
-
-  fetch(url, {
-    method,
-    headers: { "Content-Type":"application/json" },
-    body: JSON.stringify(payload)
-  })
-  .then(r => r.json())
-  .then(data => {
-    if (data.erro){
-      toast(data.erro, "error");
-      return;
-    }
-    toast(editandoChamado ? "Chamado atualizado com sucesso" : "Chamado criado com sucesso");
-    fecharModalChamado();
-    carregarTudo();
-  })
-  .catch(() => toast("Erro ao salvar chamado", "error"));
-}
-
-function excluirChamado(id){
-  if (!window.confirm("⚠️ Tem certeza que deseja excluir este chamado?")) return;
-
-  fetch(`${API}/chamados/${id}`, {
-    method:"DELETE",
-    headers:{ "Content-Type":"application/json" },
-    body: JSON.stringify({ tipo_usuario: usuario.tipo_usuario })
-  })
-  .then(r => r.json())
-  .then(data => {
-    if (data.erro){
-      toast(data.erro, "error");
-      return;
-    }
-    toast("Chamado excluído com sucesso");
-    carregarTudo();
-  })
-  .catch(() => toast("Erro ao excluir chamado", "error"));
 }
 
 function abrirModalProfissional(){
@@ -1505,6 +1531,82 @@ function abrirEditarProfissional(id){
 
 function fecharModalProfissional(){
   document.getElementById("modalProfissional").classList.remove("show");
+}
+
+async function salvarChamado(){
+  const ehAdmin = usuario.tipo_usuario === "admin";
+
+  const payload = {
+    titulo: document.getElementById("titulo").value.trim(),
+    morador: ehAdmin ? document.getElementById("morador").value.trim() : (usuario.nome || ""),
+    local_chamado: document.getElementById("local").value.trim(),
+    descricao: document.getElementById("descricao").value.trim(),
+    observacao_servico: ehAdmin ? document.getElementById("observacaoServico").value.trim() : "",
+    status_chamado: ehAdmin ? document.getElementById("status").value : "Aberto",
+    prioridade: ehAdmin ? document.getElementById("prioridade").value : "A definir",
+    categoria: document.getElementById("categoria").value.trim(),
+    profissional_id: ehAdmin ? (document.getElementById("profissional").value || null) : null,
+    data_agendada: document.getElementById("dataAgendada").value || null,
+    hora_agendada: document.getElementById("horaAgendada").value || null,
+    data_conclusao: ehAdmin ? (document.getElementById("dataConclusao").value || null) : null,
+    usuario_id: usuario.usuario_id,
+    tipo_usuario: usuario.tipo_usuario
+  };
+
+  if (!payload.titulo || !payload.morador || !payload.local_chamado || !payload.categoria){
+    toast("Preencha os campos obrigatórios corretamente", "error");
+    return;
+  }
+
+  if (payload.titulo.length > 120 || payload.morador.length > 120 || payload.local_chamado.length > 120){
+    toast("Título, morador e local devem ter no máximo 120 caracteres", "error");
+    return;
+  }
+
+  if (payload.descricao.length > 500 || payload.observacao_servico.length > 500){
+    toast("Descrição e observação devem ter no máximo 500 caracteres", "error");
+    return;
+  }
+
+  if (payload.data_agendada && payload.data_agendada < hojeISO()){
+    toast("Não é permitido escolher uma data passada", "error");
+    return;
+  }
+
+  if (!payload.data_agendada){
+    toast("Informe a data disponível/agendada", "error");
+    return;
+  }
+
+  if (!payload.hora_agendada){
+    toast("Selecione um horário", "error");
+    return;
+  }
+
+  if (ehAdmin && payload.profissional_id) {
+    await carregarHorariosDisponiveisAdmin(payload.hora_agendada);
+  }
+
+  const id = document.getElementById("chamadoId").value;
+  const url = editandoChamado ? `${API}/chamados/${id}` : `${API}/chamados`;
+  const method = editandoChamado ? "PUT" : "POST";
+
+  fetch(url, {
+    method,
+    headers: { "Content-Type":"application/json" },
+    body: JSON.stringify(payload)
+  })
+  .then(r => r.json())
+  .then(data => {
+    if (data.erro){
+      toast(data.erro, "error");
+      return;
+    }
+    toast(editandoChamado ? "Chamado atualizado com sucesso" : "Chamado criado com sucesso");
+    fecharModalChamado();
+    carregarTudo();
+  })
+  .catch(() => toast("Erro ao salvar chamado", "error"));
 }
 
 function salvarProfissional(){
@@ -1541,6 +1643,26 @@ function salvarProfissional(){
     carregarTudo();
   })
   .catch(() => toast("Erro ao salvar profissional", "error"));
+}
+
+function excluirChamado(id){
+  if (!window.confirm("⚠️ Tem certeza que deseja excluir este chamado?")) return;
+
+  fetch(`${API}/chamados/${id}`, {
+    method:"DELETE",
+    headers:{ "Content-Type":"application/json" },
+    body: JSON.stringify({ tipo_usuario: usuario.tipo_usuario })
+  })
+  .then(r => r.json())
+  .then(data => {
+    if (data.erro){
+      toast(data.erro, "error");
+      return;
+    }
+    toast("Chamado excluído com sucesso");
+    carregarTudo();
+  })
+  .catch(() => toast("Erro ao excluir chamado", "error"));
 }
 
 function excluirProfissional(id){
@@ -1590,6 +1712,21 @@ function logout(){
   localStorage.clear();
   location.href = "index.html";
 }
+
+document.getElementById("dataAgendada").addEventListener("change", async () => {
+  document.getElementById("horaAgendada").value = "";
+  if (usuario.tipo_usuario === "admin") {
+    await carregarHorariosDisponiveisAdmin();
+  } else {
+    carregarHorariosCliente();
+  }
+});
+
+document.getElementById("profissional").addEventListener("change", async () => {
+  if (usuario.tipo_usuario === "admin") {
+    await carregarHorariosDisponiveisAdmin();
+  }
+});
 
 window.addEventListener("click", (e) => {
   if (e.target === document.getElementById("modalChamado")) fecharModalChamado();
