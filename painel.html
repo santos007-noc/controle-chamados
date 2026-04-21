@@ -900,6 +900,31 @@ textarea{
   </div>
 </div>
 
+
+<div id="modalUsuario" class="modal">
+  <div class="modal-box">
+    <h3 id="modalTituloUsuario">Editar Usuário</h3>
+    <p class="sub">Atualize os dados do usuário.</p>
+
+    <div class="form-grid">
+      <input type="hidden" id="usuarioEditId">
+      <input id="usuarioEditNome" type="text" placeholder="Nome completo" maxlength="120">
+      <input id="usuarioEditApartamento" type="text" placeholder="Apartamento" maxlength="10">
+      <input id="usuarioEditLogin" type="text" placeholder="Login" maxlength="120">
+      <input id="usuarioEditSenha" type="password" placeholder="Nova senha (opcional)" maxlength="120">
+      <select id="usuarioEditTipo">
+        <option value="cliente">Cliente</option>
+        <option value="admin">Administrador</option>
+      </select>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="fecharModalUsuario()">Cancelar</button>
+      <button class="btn btn-success" onclick="salvarUsuario()">Salvar</button>
+    </div>
+  </div>
+</div>
+
 <script>
 const API = "https://backend-chamados-wgmi.onrender.com";
 
@@ -909,6 +934,7 @@ let usuarios = [];
 let profissionais = [];
 let editandoChamado = false;
 let editandoProfissional = false;
+let editandoUsuario = false;
 
 if (!usuario) {
   location.href = "index.html";
@@ -1378,7 +1404,7 @@ function renderUsuarios(){
   const filtrados = usuarios.filter(u =>
     (u.nome || "").toLowerCase().includes(busca) ||
     (u.login || "").toLowerCase().includes(busca) ||
-    (u.apartamento || "").toLowerCase().includes(busca)
+    String(u.apartamento || "").toLowerCase().includes(busca)
   );
 
   lista.innerHTML = "";
@@ -1407,11 +1433,12 @@ function renderUsuarios(){
           ${ehAdmin ? 'Administrador' : 'Cliente'}
         </span>
 
-        ${podeExcluir ? `
-          <div class="user-actions">
+        <div class="user-actions">
+          <button class="btn btn-warning" onclick="abrirEditarUsuario(${u.usuario_id})">Editar usuário</button>
+          ${podeExcluir ? `
             <button class="btn btn-danger" onclick="excluirUsuario(${u.usuario_id})">Excluir usuário</button>
-          </div>
-        ` : ""}
+          ` : ""}
+        </div>
       </div>
     `;
   });
@@ -1709,6 +1736,69 @@ function excluirUsuario(id){
   .catch(() => toast("Erro ao excluir usuário", "error"));
 }
 
+function abrirEditarUsuario(id){
+  const u = usuarios.find(user => Number(user.usuario_id) === Number(id));
+  if (!u) return;
+
+  editandoUsuario = true;
+
+  document.getElementById("modalTituloUsuario").innerText = "Editar Usuário";
+  document.getElementById("usuarioEditId").value = u.usuario_id;
+  document.getElementById("usuarioEditNome").value = u.nome || "";
+  document.getElementById("usuarioEditApartamento").value = u.apartamento || "";
+  document.getElementById("usuarioEditLogin").value = u.login || "";
+  document.getElementById("usuarioEditSenha").value = "";
+  document.getElementById("usuarioEditTipo").value = u.tipo_usuario || "cliente";
+
+  document.getElementById("modalUsuario").classList.add("show");
+}
+
+function fecharModalUsuario(){
+  document.getElementById("modalUsuario").classList.remove("show");
+}
+
+function salvarUsuario(){
+  const id = document.getElementById("usuarioEditId").value;
+
+  const payload = {
+    nome: document.getElementById("usuarioEditNome").value.trim(),
+    apartamento: document.getElementById("usuarioEditApartamento").value.trim(),
+    login: document.getElementById("usuarioEditLogin").value.trim(),
+    senha: document.getElementById("usuarioEditSenha").value.trim(),
+    tipo_usuario: usuario.tipo_usuario,
+    usuario_logado_id: usuario.usuario_id,
+    tipo_usuario_alvo: document.getElementById("usuarioEditTipo").value
+  };
+
+  if (!payload.nome || !payload.login) {
+    toast("Nome e login são obrigatórios", "error");
+    return;
+  }
+
+  if (payload.nome.length > 120 || payload.login.length > 120 || payload.apartamento.length > 10 || payload.senha.length > 120) {
+    toast("Verifique o tamanho dos campos", "error");
+    return;
+  }
+
+  fetch(`${API}/usuarios/${id}`, {
+    method: "PUT",
+    headers: { "Content-Type":"application/json" },
+    body: JSON.stringify(payload)
+  })
+  .then(r => r.json())
+  .then(data => {
+    if (data.erro){
+      toast(data.erro, "error");
+      return;
+    }
+
+    toast("Usuário atualizado com sucesso");
+    fecharModalUsuario();
+    carregarTudo();
+  })
+  .catch(() => toast("Erro ao atualizar usuário", "error"));
+}
+
 function logout(){
   localStorage.clear();
   location.href = "index.html";
@@ -1732,6 +1822,7 @@ document.getElementById("profissional").addEventListener("change", async () => {
 window.addEventListener("click", (e) => {
   if (e.target === document.getElementById("modalChamado")) fecharModalChamado();
   if (e.target === document.getElementById("modalProfissional")) fecharModalProfissional();
+  if (e.target === document.getElementById("modalUsuario")) fecharModalUsuario();
 });
 
 carregarTudo();
