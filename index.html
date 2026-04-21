@@ -81,6 +81,7 @@
       outline:none;
       transition:0.2s;
       background:#f8fafc;
+      font-size:15px;
     }
 
     input:focus{
@@ -98,10 +99,17 @@
       font-weight:bold;
       cursor:pointer;
       transition:0.2s;
+      font-size:15px;
     }
 
     button:hover{
       transform:translateY(-1px);
+    }
+
+    button:disabled{
+      opacity:0.7;
+      cursor:not-allowed;
+      transform:none;
     }
 
     .entrar{
@@ -136,17 +144,17 @@
     <p class="sub">Acesse sua conta</p>
 
     <div class="campo">
-      <label>Usuário</label>
-      <input id="login" type="text" placeholder="Digite seu usuário">
+      <label for="login">Usuário</label>
+      <input id="login" type="text" placeholder="Digite seu usuário" maxlength="120">
     </div>
 
     <div class="campo">
-      <label>Senha</label>
-      <input id="senha" type="password" placeholder="Digite sua senha">
+      <label for="senha">Senha</label>
+      <input id="senha" type="password" placeholder="Digite sua senha" maxlength="120">
     </div>
 
     <button class="entrar" onclick="entrar()" id="btnEntrar">Entrar</button>
-    <button class="cadastrar" onclick="irCadastro()">Cadastrar</button>
+    <button class="cadastrar" onclick="irCadastro()" id="btnCadastro">Cadastrar</button>
 
     <div id="msg" class="msg"></div>
   </div>
@@ -154,35 +162,56 @@
   <script>
     const API = "https://backend-chamados-wgmi.onrender.com";
 
-    function entrar(){
+    function definirEstadoBotoes(carregando) {
+      const btnEntrar = document.getElementById("btnEntrar");
+      const btnCadastro = document.getElementById("btnCadastro");
+
+      btnEntrar.disabled = carregando;
+      btnCadastro.disabled = carregando;
+
+      if (carregando) {
+        btnEntrar.innerText = "Entrando...";
+        btnEntrar.classList.add("loading");
+      } else {
+        btnEntrar.innerText = "Entrar";
+        btnEntrar.classList.remove("loading");
+      }
+    }
+
+    async function entrar() {
       const login = document.getElementById("login").value.trim();
       const senha = document.getElementById("senha").value.trim();
       const msg = document.getElementById("msg");
-      const btn = document.getElementById("btnEntrar");
 
       msg.innerText = "";
 
-      if(!login || !senha){
+      if (!login || !senha) {
         msg.innerText = "Preencha login e senha";
         msg.style.color = "red";
         return;
       }
 
-      btn.innerText = "Entrando...";
-      btn.classList.add("loading");
+      definirEstadoBotoes(true);
 
-      fetch(`${API}/login`,{
-        method:"POST",
-        headers:{ "Content-Type":"application/json" },
-        body: JSON.stringify({ login, senha })
-      })
-      .then(res => res.json())
-      .then(data => {
-        if(data.erro){
-          msg.innerText = data.erro;
+      try {
+        const resposta = await fetch(`${API}/login`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ login, senha })
+        });
+
+        let data = null;
+
+        try {
+          data = await resposta.json();
+        } catch {
+          data = { erro: "Resposta inválida do servidor" };
+        }
+
+        if (!resposta.ok || data.erro) {
+          msg.innerText = data.erro || "Não foi possível realizar o login";
           msg.style.color = "red";
-          btn.innerText = "Entrar";
-          btn.classList.remove("loading");
+          definirEstadoBotoes(false);
           return;
         }
 
@@ -194,18 +223,24 @@
         setTimeout(() => {
           window.location.href = "painel.html";
         }, 800);
-      })
-      .catch(() => {
+
+      } catch (error) {
+        console.error("Erro no login:", error);
         msg.innerText = "Erro ao conectar com servidor";
         msg.style.color = "red";
-        btn.innerText = "Entrar";
-        btn.classList.remove("loading");
-      });
+        definirEstadoBotoes(false);
+      }
     }
 
-    function irCadastro(){
+    function irCadastro() {
       window.location.href = "cadastro.html";
     }
+
+    document.addEventListener("keydown", function(e) {
+      if (e.key === "Enter") {
+        entrar();
+      }
+    });
   </script>
 
 </body>
